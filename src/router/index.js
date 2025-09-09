@@ -87,6 +87,18 @@ export const constantRoutes = [
         meta: { title: '个人中心', icon: 'user' }
       }
     ]
+  },
+  {
+    path: '/createCase',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/createCase/index'),
+        name: 'CreateCase',
+        meta: { title: '生成用例', icon: 'edit' }
+      }
+    ]
   }
 ]
 
