@@ -99,7 +99,19 @@ export const constantRoutes = [
         meta: { title: '生成用例', icon: 'edit' }
       }
     ]
-  }
+  },
+  {
+    path: '/taskCreation',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/taskCreation/index'),
+        name: 'TaskCreation',
+        meta: { title: '任务创建', icon: 'edit' }
+      }
+    ]
+  },
 ]
 
 // 动态路由，基于用户权限动态去加载

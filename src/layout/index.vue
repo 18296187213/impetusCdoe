@@ -14,10 +14,10 @@
       :class="{ hasTagsView: needTagsView, sidebarHide: sidebar.hide }"
       class="main-container"
     >
-      <!-- <div :class="{ 'fixed-header': fixedHeader }">
+      <div :class="{ 'fixed-header': fixedHeader }">
         <navbar @setLayout="setLayout" />
         <tags-view v-if="needTagsView" />
-      </div> -->
+      </div>
       <app-main />
       <settings ref="settingRef" />
     </div>
