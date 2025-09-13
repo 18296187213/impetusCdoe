@@ -169,7 +169,7 @@
 import { listNotice, getNotice, delNotice, addNotice, updateNotice } from "@/api/system/notice"
 
 export default {
-  name: "TaskCreation",
+  name: "taskMgt",
   dicts: ['sys_notice_status', 'sys_notice_type'],
   data() {
     return {
@@ -328,6 +328,7 @@ export default {
 }
 
 .task-card {
+  height: 260px;
   background: #ffffff;
   border: 1px solid #e4e7ed;
   border-radius: 8px;

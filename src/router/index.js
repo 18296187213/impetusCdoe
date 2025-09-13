@@ -101,14 +101,39 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/taskCreation',
+    path: '/taskMgt',
     component: Layout,
     children: [
       {
         path: 'index',
-        component: () => import('@/views/taskCreation/index'),
-        name: 'TaskCreation',
-        meta: { title: '任务创建', icon: 'edit' }
+        component: () => import('@/views/taskMgt/index'),
+        name: 'TaskMgt',
+        meta: { title: '任务管理', icon: 'edit' }
+      }
+    ]
+  },
+  {
+    path: '/projectMgt',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/projectMgt/index'),
+        name: 'ProjectMgt',
+        meta: { title: '项目管理', icon: 'edit' }
+      },
+    ]
+  },
+  {
+    path: '/projectMgt/modules',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/projectMgt/modules/index'),
+        name: 'Modules',
+        meta: { title: '项目模块', activeMenu: '/projectMgt' } // 指定激活的父菜单
       }
     ]
   },
