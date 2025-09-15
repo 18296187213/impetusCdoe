@@ -65,6 +65,7 @@ export const constantRoutes = [
     path: '',
     component: Layout,
     redirect: 'index',
+    hidden: true,
     children: [
       {
         path: 'index',
@@ -96,7 +97,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/createCase/index'),
         name: 'CreateCase',
-        meta: { title: '生成用例', icon: 'case2' }
+        meta: { title: 'AI生成用例', icon: 'case2' }
       }
     ]
   },

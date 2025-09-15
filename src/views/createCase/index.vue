@@ -5,7 +5,7 @@
 <script>
 /*
  *@Date: 2025-09-09 20:45:39
- *@Description: 生成用例
+ *@Description: AI生成用例
  */
 export default {
   name: "CreateCase",

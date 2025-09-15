@@ -32,13 +32,13 @@
     <!-- 卡片列表 -->
     <div v-loading="loading" class="task-card-container">
       <div class="card-container">
-      <div v-for="item in tableList" :key="item.id" class="task-card">
-        <!-- 卡片头部 -->
-        <div class="card-header">
-          <div class="task-info">
-            <svg-icon icon-class="case" style="font-size: 18px;" />
-            <span class="task-title">{{ item.name }}</span>
-            <!-- <el-popover
+        <div v-for="item in tableList" :key="item.id" class="task-card">
+          <!-- 卡片头部 -->
+          <div class="card-header">
+            <div class="task-info">
+              <svg-icon icon-class="case" style="font-size: 18px" />
+              <span class="task-title">{{ item.name }}</span>
+              <!-- <el-popover
               placement="bottom-end"
               width="80"
               trigger="click"
@@ -62,36 +62,36 @@
                 @click.stop
               ></i>
             </el-popover> -->
+            </div>
           </div>
-        </div>
 
-        <!-- 卡片内容 -->
-        <div class="card-content">
-          <div class="info-row">
-            <span class="label">创建日期</span>
-            <span class="value">{{ item.createTime }}</span>
+          <!-- 卡片内容 -->
+          <div class="card-content">
+            <div class="info-row">
+              <span class="label">创建日期</span>
+              <span class="value">{{ item.createTime }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">用例数量</span>
+              <span class="value">{{ item.testNumber }}</span>
+            </div>
+            <div class="info-row">
+              <span class="label">负责人</span>
+              <span class="value">{{ item.headName }}</span>
+            </div>
           </div>
-          <div class="info-row">
-            <span class="label">用例数量</span>
-            <span class="value">{{ item.testNumber }}</span>
-          </div>
-          <div class="info-row">
-            <span class="label">负责人</span>
-            <span class="value">{{ item.headName }}</span>
-          </div>
-        </div>
 
-        <!-- 卡片操作按钮 -->
-        <div class="card-actions">
-          <el-button
-            size="mini"
-            type="primary"
-            @click.stop="handleViewDetail(item)"
-          >
-            详情
-          </el-button>
+          <!-- 卡片操作按钮 -->
+          <div class="card-actions">
+            <el-button
+              size="mini"
+              type="primary"
+              @click.stop="handleViewDetail(item)"
+            >
+              详情
+            </el-button>
+          </div>
         </div>
-      </div>
       </div>
 
       <!-- 空状态 -->
@@ -218,10 +218,10 @@ export default {
       const id = row.id;
       // 关闭弹窗
       this.$refs["popover" + id][0].doClose();
-        this.form.name = row.name;
-        this.form.id = row.id
-        this.open = true;
-        this.title = "修改项目";
+      this.form.name = row.name;
+      this.form.id = row.id;
+      this.open = true;
+      this.title = "修改项目";
     },
     /** 删除按钮操作（带关闭弹窗） */
     handleDeleteWithClose(row) {
@@ -266,11 +266,11 @@ export default {
     /** 查看详情 */
     handleViewDetail(row) {
       this.$router.push({
-        path: '/CaseMgt/caseModule/index',
+        path: "/CaseMgt/caseModule/index",
         query: {
           projectsId: row.id,
-          name: row.name
-        }
+          name: row.name,
+        },
       });
     },
   },
