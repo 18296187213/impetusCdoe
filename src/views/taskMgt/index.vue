@@ -127,13 +127,13 @@
               >
                 编辑
               </el-button>
-              <el-button
+              <!-- <el-button
                 size="mini"
                 type="primary"
                 @click.stop="handleViewDetail(item)"
               >
                 详情
-              </el-button>
+              </el-button> -->
             </div>
           </div>
         </div>
@@ -151,6 +151,7 @@
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
+      :page-sizes="[12, 24, 36]"
       @pagination="getList"
     />
 
@@ -191,8 +192,8 @@
             <el-form-item label="截止时间" prop="deadline">
               <el-date-picker
                 v-model="form.deadline"
-                type="date"
-                value-format="yyyy-MM-dd"
+                type="datetime"
+                value-format="yyyy-MM-dd HH:mm:ss"
                 placeholder="请选择截止时间"
                 style="width: 100%"
               />
@@ -288,7 +289,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 12,
         projectsId: undefined,
         workUserId: undefined,
         status: undefined,
@@ -595,7 +596,7 @@ export default {
 .empty-state {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 60px 20px;
+  padding: 200px 20px;
   color: #909399;
 }
 

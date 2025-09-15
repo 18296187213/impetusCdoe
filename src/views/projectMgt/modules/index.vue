@@ -31,7 +31,7 @@
 
       <el-col :span="2" style="text-align: right">
         <el-button type="primary" size="mini" @click="handleAdd"
-          >新建项目</el-button
+          >新建模块</el-button
         >
       </el-col>
     </el-row>

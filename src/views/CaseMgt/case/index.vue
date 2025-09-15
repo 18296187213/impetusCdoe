@@ -54,9 +54,6 @@
     <!-- 添加或修改用例对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px" size="small">
-        <el-form-item label="用例名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入用例名称" />
-        </el-form-item>
         <el-form-item label="用例步骤" prop="procedures">
           <el-input v-model="form.procedures" placeholder="请输入用例步骤" />
         </el-form-item>
@@ -121,7 +118,6 @@ export default {
   },
   created() {
     this.routerData = this.$route.query;
-    console.log("🚀 ~ :118 ~ created ~ this.routerData:", this.routerData)
     if (this.routerData.modulesId) {
       this.queryParams.modulesId = this.routerData.modulesId;
       this.form.modulesId = this.routerData.modulesId;
@@ -158,9 +154,10 @@ export default {
     reset() {
       this.form = {
         id: undefined,
-        name: undefined,
         modulesId: this.routerData.modulesId,
         projectsId: this.routerData.projectsId,
+        procedures: undefined,
+        content: undefined,
       };
       this.resetForm("form");
     },

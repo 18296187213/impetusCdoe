@@ -106,6 +106,7 @@
       :total="total"
       :page.sync="queryParams.pageNum"
       :limit.sync="queryParams.pageSize"
+      :page-sizes="[12, 24, 36]"
       @pagination="getList"
     />
 
@@ -157,7 +158,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 12,
         name: undefined,
       },
       // 表单参数
