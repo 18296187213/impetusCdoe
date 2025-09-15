@@ -7,37 +7,17 @@
           routerData.name
         }}</el-button>
       </el-col>
-      <el-col :span="22">
-        <el-form
-          :model="queryParams"
-          ref="queryForm"
-          size="small"
-          :inline="true"
-          v-show="showSearch"
-          label-width="68px"
-          @submit.native.prevent
-        >
-          <el-form-item label="模块名称" prop="name">
-            <el-input
-              v-model="queryParams.name"
-              placeholder="请输入模块名称"
-              clearable
-              style="width: 240px"
-              @keyup.enter.native="handleQuery"
-            />
-          </el-form-item>
-        </el-form>
-      </el-col>
 
-      <el-col :span="2" style="text-align: right">
+      <el-col :span="24" style="text-align: right">
         <el-button type="primary" size="mini" @click="handleAdd"
-          >新建项目</el-button
+          >新建用例</el-button
         >
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="tableList" stripe>
-      <el-table-column label="模块名称" align="center" prop="name" />
+    <el-table v-loading="loading" :data="tableList">
+      <el-table-column label="测试内容" align="center" prop="content" />
+      <el-table-column label="测试步骤" align="center" prop="procedures" />
       <el-table-column label="创建时间" align="center" prop="createTime" />
       <el-table-column
         label="操作"
@@ -71,11 +51,17 @@
       @pagination="getList"
     />
 
-    <!-- 添加或修改模块对话框 -->
+    <!-- 添加或修改用例对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-        <el-form-item label="模块名称" prop="name">
-          <el-input v-model="form.name" placeholder="请输入模块名称" />
+      <el-form ref="form" :model="form" :rules="rules" label-width="80px" size="small">
+        <el-form-item label="用例名称" prop="name">
+          <el-input v-model="form.name" placeholder="请输入用例名称" />
+        </el-form-item>
+        <el-form-item label="用例步骤" prop="procedures">
+          <el-input v-model="form.procedures" placeholder="请输入用例步骤" />
+        </el-form-item>
+        <el-form-item label="用例内容" prop="content">
+          <el-input v-model="form.content" placeholder="请输入用例内容" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -88,19 +74,21 @@
 
 <script>
 import {
-  listModule,
-  delModule,
-  addModule,
-  updateModule,
-} from "@/api/projectMgt/modules";
+  listCase,
+  delCase,
+  addCase,
+  updateCase,
+} from "@/api/projectMgt/case";
 
 export default {
-  name: "Module",
+  name: "Case",
   data() {
     return {
       routerData: {
         name: undefined,
-        projectId: undefined,
+        modulesId: undefined,
+        projectsId: undefined,
+        projectName: undefined,
       },
       // 遮罩层
       loading: true,
@@ -119,34 +107,43 @@ export default {
         pageNum: 1,
         pageSize: 10,
         name: undefined,
-        projectsId: undefined,
+        modulesId: undefined,
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
         name: [
-          { required: true, message: "模块名称不能为空", trigger: "blur" },
+          { required: true, message: "用例名称不能为空", trigger: "blur" },
         ],
       },
     };
   },
   created() {
     this.routerData = this.$route.query;
-    if (this.routerData.projectId) {
-      this.queryParams.projectsId = this.routerData.projectId;
-      this.form.projectsId = this.routerData.projectId;
+    console.log("🚀 ~ :118 ~ created ~ this.routerData:", this.routerData)
+    if (this.routerData.modulesId) {
+      this.queryParams.modulesId = this.routerData.modulesId;
+      this.form.modulesId = this.routerData.modulesId;
+      this.form.projectsId = this.routerData.projectsId;
       this.getList();
     }
   },
   methods: {
     handleBack() {
-      this.$router.push({ path: "/projectMgt/index" });
+      // 返回到模块页面时需要传递projectId和name参数
+      this.$router.push({
+        path: "/CaseMgt/caseModule/index",
+        query: {
+          projectsId: this.routerData.projectsId,
+          name: this.routerData.projectName
+        }
+      });
     },
     /** 查询table列表 */
     getList() {
       this.loading = true;
-      listModule(this.queryParams).then((response) => {
+      listCase(this.queryParams).then((response) => {
         this.tableList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -162,7 +159,8 @@ export default {
       this.form = {
         id: undefined,
         name: undefined,
-        projectsId: this.routerData.projectId,
+        modulesId: this.routerData.modulesId,
+        projectsId: this.routerData.projectsId,
       };
       this.resetForm("form");
     },
@@ -180,27 +178,27 @@ export default {
     handleAdd() {
       this.reset();
       this.open = true;
-      this.title = "添加模块";
+      this.title = "添加用例";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
       this.form = { ...row };
       this.open = true;
-      this.title = "修改模块";
+      this.title = "修改用例";
     },
     /** 提交按钮 */
     submitForm: function () {
       this.$refs["form"].validate((valid) => {
         if (valid) {
           if (this.form.id != undefined) {
-            updateModule(this.form).then((response) => {
+            updateCase(this.form).then((response) => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addModule(this.form).then((response) => {
+            addCase(this.form).then((response) => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -213,9 +211,9 @@ export default {
     handleDelete(row) {
       const id = row.id;
       this.$modal
-        .confirm('是否确认删除模块名称为"' + row.name + '"的数据项？')
+        .confirm('是否确认删除用例名称为"' + row.name + '"的数据项？')
         .then(function () {
-          return delModule(id);
+          return delCase(id);
         })
         .then(() => {
           this.getList();

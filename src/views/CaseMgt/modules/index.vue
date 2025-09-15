@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="24" class="title-col">
         <i class="el-icon-back"></i>
-        <el-button type="text" @click="handleBack">{{
+        <el-button type="text" size="large" @click="handleBack">{{
           routerData.name
         }}</el-button>
       </el-col>
@@ -29,11 +29,11 @@
         </el-form>
       </el-col>
 
-      <el-col :span="2" style="text-align: right">
+      <!-- <el-col :span="2" style="text-align: right">
         <el-button type="primary" size="mini" @click="handleAdd"
           >新建项目</el-button
         >
-      </el-col>
+      </el-col> -->
     </el-row>
 
     <el-table v-loading="loading" :data="tableList" stripe>
@@ -48,6 +48,12 @@
           <el-button
             size="mini"
             type="text"
+            @click="handleDetail(scope.row)"
+            >详情</el-button
+          >
+          <!-- <el-button
+            size="mini"
+            type="text"
             icon="el-icon-edit"
             @click="handleUpdate(scope.row)"
             >修改</el-button
@@ -58,7 +64,7 @@
             icon="el-icon-delete"
             @click="handleDelete(scope.row)"
             >删除</el-button
-          >
+          > -->
         </template>
       </el-table-column>
     </el-table>
@@ -100,7 +106,7 @@ export default {
     return {
       routerData: {
         name: undefined,
-        projectId: undefined,
+        projectsId: undefined,
       },
       // 遮罩层
       loading: true,
@@ -133,15 +139,15 @@ export default {
   },
   created() {
     this.routerData = this.$route.query;
-    if (this.routerData.projectId) {
-      this.queryParams.projectsId = this.routerData.projectId;
-      this.form.projectsId = this.routerData.projectId;
+    if (this.routerData.projectsId) {
+      this.queryParams.projectsId = this.routerData.projectsId;
+      this.form.projectsId = this.routerData.projectsId;
       this.getList();
     }
   },
   methods: {
     handleBack() {
-      this.$router.push({ path: "/projectMgt/index" });
+      this.$router.push({ path: "/CaseMgt/index" });
     },
     /** 查询table列表 */
     getList() {
@@ -162,7 +168,7 @@ export default {
       this.form = {
         id: undefined,
         name: undefined,
-        projectsId: this.routerData.projectId,
+        projectsId: this.routerData.projectsId,
       };
       this.resetForm("form");
     },
@@ -181,6 +187,19 @@ export default {
       this.reset();
       this.open = true;
       this.title = "添加模块";
+    },
+    /** 详情按钮操作 */
+    handleDetail (row) {
+      console.log("🚀 ~ :193 ~ handleDetail ~ row:", row)
+      this.$router.push({
+        path: '/CaseMgt/case/index',
+        query: {
+          modulesId: row.id,
+          name: row.name,
+          projectsId: this.routerData.projectsId,
+          projectName: this.routerData.name
+        }
+      });
     },
     /** 修改按钮操作 */
     handleUpdate(row) {

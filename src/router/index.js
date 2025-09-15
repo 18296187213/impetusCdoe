@@ -96,7 +96,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/createCase/index'),
         name: 'CreateCase',
-        meta: { title: '生成用例', icon: 'edit' }
+        meta: { title: '生成用例', icon: 'case2' }
       }
     ]
   },
@@ -108,7 +108,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/taskMgt/index'),
         name: 'TaskMgt',
-        meta: { title: '任务管理', icon: 'edit' }
+        meta: { title: '任务管理', icon: 'task1' }
       }
     ]
   },
@@ -120,7 +120,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/projectMgt/index'),
         name: 'ProjectMgt',
-        meta: { title: '项目管理', icon: 'edit' }
+        meta: { title: '项目管理', icon: 'project1' }
       },
     ]
   },
@@ -134,6 +134,44 @@ export const constantRoutes = [
         component: () => import('@/views/projectMgt/modules/index'),
         name: 'Modules',
         meta: { title: '项目模块', activeMenu: '/projectMgt' } // 指定激活的父菜单
+      }
+    ]
+  },
+  {
+    path: '/CaseMgt',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/CaseMgt/index'),
+        name: 'CaseMgt',
+        meta: { title: '用例库', icon: 'case1' }
+      }
+    ]
+  },
+  {
+    path: '/CaseMgt/caseModule',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/CaseMgt/modules/index'),
+        name: 'CaseModule',
+        meta: { title: '用例模块管理' }
+      }
+    ]
+  },
+  {
+    path: '/CaseMgt/case',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/CaseMgt/case/index'),
+        name: 'Case',
+        meta: { title: '用例管理' }
       }
     ]
   },
