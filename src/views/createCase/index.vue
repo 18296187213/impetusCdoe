@@ -13,7 +13,7 @@
       <div v-else class="case-list">
         <div class="case-header">
           <span class="total-count">生成用例：{{ testCases.length }}</span>
-          <el-button type="primary" size="small" @click="handleSaveAll"
+          <el-button type="primary" size="mini" @click="handleSaveAll"
             >保存用例</el-button
           >
         </div>
@@ -104,70 +104,13 @@
     </div>
 
     <!-- 编辑对话框 -->
-    <el-dialog title="编辑用例" :visible.sync="editDialogVisible" width="60%">
-      <el-form :model="editForm" label-width="80px" size="small">
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="测试内容">
-              <el-input
-                v-model="editForm.content"
-                type="textarea"
-                :rows="3"
-                placeholder="请输入测试内容描述"
-              ></el-input>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-row>
-              <el-col :span="24">
-                <el-form-item label="测试步骤">
-                  <el-input
-                    v-for="(step, index) in editForm.steps"
-                    :key="index"
-                    v-model="editForm.steps[index]"
-                    type="textarea"
-                    :rows="2"
-                    class="step-input"
-                    style="margin-bottom: 10px"
-                    placeholder="请输入测试步骤"
-                  ></el-input>
-                  <el-button type="text" @click="addStep">+ 添加步骤</el-button>
-                  <el-button v-if="editForm.steps.length > 1" type="text" @click="removeStep" style="color: #f56c6c; margin-left: 10px">- 删除步骤</el-button>
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </el-col>
-          <el-col :span="12">
-            <el-row>
-              <el-col :span="24">
-                <el-form-item label="预期结果">
-                  <el-input
-                    v-for="(result, index) in editForm.expected"
-                    :key="index"
-                    v-model="editForm.expected[index]"
-                    type="textarea"
-                    :rows="2"
-                    class="expected-input"
-                    style="margin-bottom: 10px"
-                    placeholder="请输入预期结果"
-                  ></el-input>
-                  <el-button type="text" @click="addExpected">+ 添加预期结果</el-button>
-                  <el-button v-if="editForm.expected.length > 1" type="text" @click="removeExpected" style="color: #f56c6c; margin-left: 10px">- 删除结果</el-button>
-                </el-form-item>
-              </el-col>
-            </el-row>
-          </el-col>
-        </el-row>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="small" @click="editDialogVisible = false"
-          >取消</el-button
-        >
-        <el-button size="small" type="primary" @click="handleSaveEdit"
-          >保存</el-button
-        >
-      </div>
-    </el-dialog>
+    <!-- 编辑用例对话框组件 -->
+    <EditCaseDialog
+      :visible.sync="editDialogVisible"
+      :edit-data="editIndex >= 0 ? testCases[editIndex] : {}"
+      :edit-index="editIndex"
+      @save="handleSaveEdit"
+    />
 
     <!-- 保存用例对话框组件 -->
     <SaveCaseDialog
@@ -186,22 +129,18 @@
 
 import { aiCase, saveCase } from "@/api/createCase";
 import SaveCaseDialog from "./components/SaveCaseDialog.vue";
+import EditCaseDialog from "./components/EditCaseDialog.vue";
 export default {
   name: "CreateCase",
   components: {
     SaveCaseDialog,
+    EditCaseDialog,
   },
   data() {
     return {
       inputText: "",
       testCases: [],
       editDialogVisible: false,
-      editForm: {
-        id: null,
-        content: "",
-        steps: [],
-        expected: [],
-      },
       editIndex: -1,
       loading: false,
       saveDialogVisible: false,
@@ -242,12 +181,6 @@ export default {
     // 编辑用例
     handleEdit(row) {
       this.editIndex = this.testCases.findIndex((item) => item.id === row.id);
-      this.editForm = {
-        id: row.id,
-        content: row.content || "",
-        steps: [...row.steps],
-        expected: [...row.expected],
-      };
       this.editDialogVisible = true;
     },
 
@@ -268,39 +201,18 @@ export default {
     },
 
     // 保存编辑
-    handleSaveEdit() {
-      if (this.editIndex !== -1) {
-        this.$set(this.testCases, this.editIndex, {
-          ...this.editForm,
+    handleSaveEdit(data) {
+      const { editData, editIndex } = data;
+      if (editIndex !== -1) {
+        this.$set(this.testCases, editIndex, {
+          ...editData,
         });
         this.editDialogVisible = false;
         this.$message.success("保存成功！");
       }
     },
 
-    // 添加步骤
-    addStep() {
-      this.editForm.steps.push("");
-    },
 
-    // 删除步骤
-    removeStep() {
-      if (this.editForm.steps.length > 1) {
-        this.editForm.steps.pop();
-      }
-    },
-
-    // 添加预期结果
-    addExpected() {
-      this.editForm.expected.push("");
-    },
-
-    // 删除预期结果
-    removeExpected() {
-      if (this.editForm.expected.length > 1) {
-        this.editForm.expected.pop();
-      }
-    },
 
     // 保存所有用例
     handleSaveAll() {
@@ -314,7 +226,7 @@ export default {
     // 确认保存用例
     handleSave(saveData) {
       const { projectsId, modulesId, testCases } = saveData;
-      
+
       console.log("🚀 ~ handleSave ~ saveData:", saveData);
       // 循环testCases,给每一项添加projectsId、modulesId
       const params = testCases.map((item) => {
@@ -509,17 +421,7 @@ export default {
   }
 }
 
-// 编辑对话框
-.dialog-footer {
-  text-align: right;
-}
 
-.step-input,
-.expected-input {
-  ::v-deep .el-textarea__inner {
-    border-radius: 6px;
-  }
-}
 
 // 响应式设计
 @media (max-width: 768px) {
