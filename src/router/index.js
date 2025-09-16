@@ -65,13 +65,13 @@ export const constantRoutes = [
     path: '',
     component: Layout,
     redirect: 'index',
-    hidden: true,
+    // hidden: true,
     children: [
       {
         path: 'index',
-        component: () => import('@/views/index'),
+        component: () => import('@/views/createCase/index'),
         name: 'Index',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
+        meta: { title: 'AI生成用例', icon: 'case2', affix: true }
       }
     ]
   },
@@ -89,18 +89,18 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/createCase',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/createCase/index'),
-        name: 'CreateCase',
-        meta: { title: 'AI生成用例', icon: 'case2' }
-      }
-    ]
-  },
+  // {
+  //   path: '/createCase',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/createCase/index'),
+  //       name: 'CreateCase',
+  //       meta: { title: 'AI生成用例', icon: 'case2' }
+  //     }
+  //   ]
+  // },
   {
     path: '/taskMgt',
     component: Layout,

@@ -127,13 +127,13 @@
               >
                 编辑
               </el-button>
-              <!-- <el-button
+              <el-button
                 size="mini"
                 type="primary"
                 @click.stop="handleViewDetail(item)"
               >
                 详情
-              </el-button> -->
+              </el-button>
             </div>
           </div>
         </div>
