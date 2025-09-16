@@ -76,6 +76,18 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/aiStream',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/aiStream/index'),
+        name: 'AiStream',
+        meta: { title: 'AI自动测试', icon: 'case2' }
+      }
+    ]
+  },
+  {
     path: '/user',
     component: Layout,
     hidden: true,

@@ -2,15 +2,27 @@
   <div class="create-case-container">
     <!-- 主要内容区域 - 动态高度，支持滚动 -->
     <div class="content-section">
+      <!-- 加载状态 -->
+      <div v-if="loading" class="loading-state">
+        <div class="loading-content">
+          <img
+            src="@/assets/images/loading.gif"
+            alt="加载中"
+            class="loading-gif"
+          />
+          <span class="loading-text">正在生成用例,请稍后...</span>
+        </div>
+      </div>
+
       <!-- 空状态 -->
-      <div v-if="testCases.length === 0" class="empty-state">
+      <div v-if="testCases.length === 0 && !loading" class="empty-state">
         <div class="welcome-text">
           <h3>Hi-我是AI用例助手</h3>
         </div>
       </div>
 
       <!-- 用例列表 -->
-      <div v-else class="case-list">
+      <div v-if="testCases.length > 0 && !loading" class="case-list">
         <div class="case-header">
           <span class="total-count">生成用例：{{ testCases.length }}</span>
           <el-button type="primary" size="mini" @click="handleSaveAll"
@@ -148,7 +160,6 @@ export default {
   },
 
   methods: {
-
     // 处理发送按钮点击
     handleSend() {
       if (!this.inputText.trim() || this.loading) return;
@@ -212,8 +223,6 @@ export default {
       }
     },
 
-
-
     // 保存所有用例
     handleSaveAll() {
       if (this.testCases.length === 0) {
@@ -227,10 +236,8 @@ export default {
     handleSave(saveData) {
       const { projectsId, modulesId, testCases } = saveData;
 
-      console.log("🚀 ~ handleSave ~ saveData:", saveData);
       // 循环testCases,给每一项添加projectsId、modulesId
       const params = testCases.map((item) => {
-        console.log("🚀 ~ handleSave ~ item:", item)
         return {
           ...item,
           procedures: JSON.stringify(item.steps),
@@ -239,18 +246,19 @@ export default {
           modulesId: modulesId,
         };
       });
-      console.log("🚀 ~ params:", params);
 
-      saveCase(params).then(res => {
-        if (res.code === 200) {
-          this.$message.success("用例保存成功！");
-          this.saveDialogVisible = false;
-          // 可以选择清空当前用例列表或保留
-          // this.testCases = [];
-        }
-      }).catch(() => {
-        this.$message.error("用例保存失败，请重试！");
-      });
+      saveCase(params)
+        .then((res) => {
+          if (res.code === 200) {
+            this.$message.success("用例保存成功！");
+            this.saveDialogVisible = false;
+            // 可以选择清空当前用例列表或保留
+            // this.testCases = [];
+          }
+        })
+        .catch(() => {
+          this.$message.error("用例保存失败，请重试！");
+        });
     },
   },
 };
@@ -267,10 +275,12 @@ export default {
 // 主要内容区域 - 动态高度，支持滚动
 .content-section {
   flex: 1;
+  width: 1120px;
   overflow-y: auto;
   padding: 20px;
+  padding-top: 80px;
   background: white;
-  margin: 20px 20px 0 20px;
+  margin: 0 auto;
   border-radius: 8px 8px 0 0;
 }
 
@@ -290,6 +300,31 @@ export default {
   font-size: 24px;
   font-weight: 500;
   color: #303133;
+}
+
+// 加载状态
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 400px;
+}
+
+.loading-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.loading-gif {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.loading-text {
+  color: #909399;
+  font-size: 14px;
 }
 
 // 用例列表
@@ -354,10 +389,11 @@ export default {
 // 底部输入区域 - 固定高度
 .bottom-input-section {
   height: 200px;
+  width: 1120px;
   background: white;
   border-radius: 0 0 8px 8px;
   padding: 20px;
-  margin: 0 300px 20px 300px;
+  margin: 0 auto;
 }
 
 .input-wrapper {
@@ -420,8 +456,6 @@ export default {
     font-size: 16px;
   }
 }
-
-
 
 // 响应式设计
 @media (max-width: 768px) {

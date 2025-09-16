@@ -1,0 +1,401 @@
+<template>
+  <div class="chat-container">
+    <!-- 对话内容区域 - 动态高度，支持滚动 -->
+    <div class="chat-content" ref="chatContent">
+      <!-- 空状态 -->
+      <div v-if="messages.length === 0" class="empty-state">
+        <div class="welcome-text">
+          <h3>Hi-我是AI助手</h3>
+        </div>
+      </div>
+
+      <!-- 对话消息列表 -->
+      <div v-else class="message-list">
+        <div
+          v-for="(message, index) in messages"
+          :key="index"
+          :class="['message-item', message.type]"
+        >
+          <div class="message-content">
+            <div class="message-text">
+              {{ message.content }}
+            </div>
+            <div class="message-time">
+              {{ message.time }}
+            </div>
+          </div>
+        </div>
+
+        <!-- 加载状态  -->
+        <div v-if="loading" class="message-item">
+          <div class="loading-content">
+            <img src="@/assets/images/loading.gif" alt="加载中" class="loading-gif" />
+            <span class="loading-text">正在回答中,请稍后...</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部输入区域 - 固定高度 -->
+    <div class="bottom-input-section">
+      <div class="input-wrapper">
+        <div class="textarea-container">
+          <el-select v-model="agreement" size="small" placeholder="请选择">
+            <el-option
+              v-for="item in agreementOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+          <el-input
+            v-model="inputText"
+            type="textarea"
+            :rows="5"
+            placeholder="请发送接口内容"
+            class="input-textarea"
+            @keyup.enter.ctrl="handleSend"
+          ></el-input>
+          <div
+            @click="handleSend"
+            :class="['send-btn', { disabled: !inputText.trim() || loading }]"
+          >
+            <svg-icon icon-class="case-send" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+/*
+ *@Date: 2025-09-09 20:45:39
+ *@Description: AI生成用例
+ */
+
+import { aiStream } from "@/api/aiStream";
+export default {
+  name: "AiStream",
+  data() {
+    return {
+      agreementOptions: [
+        {
+          value: "1",
+          label: "HTTP",
+        },
+        {
+          value: "2",
+          label: "HTTPS",
+        },
+      ],
+      agreement: "",
+      inputText: "",
+      messages: [], // 对话消息列表
+      loading: false,
+    };
+  },
+
+  methods: {
+    // 格式化时间
+    formatTime() {
+      const now = new Date();
+      return `${now.getHours().toString().padStart(2, "0")}:${now
+        .getMinutes()
+        .toString()
+        .padStart(2, "0")}`;
+    },
+
+    // 滚动到底部
+    scrollToBottom() {
+      this.$nextTick(() => {
+        const chatContent = this.$refs.chatContent;
+        if (chatContent) {
+          chatContent.scrollTop = chatContent.scrollHeight;
+        }
+      });
+    },
+
+    // 处理发送按钮点击
+    handleSend() {
+      if (!this.inputText.trim() || this.loading) return;
+
+      const userMessage = {
+        type: "user",
+        content: this.inputText,
+        time: this.formatTime(),
+      };
+
+      // 添加用户消息
+      this.messages.push(userMessage);
+      const currentInput = this.inputText;
+      this.inputText = "";
+      this.scrollToBottom();
+
+      this.loading = true;
+      aiStream({
+        content: currentInput,
+      })
+        .then((res) => {
+          if (res.code === 200) {
+            // 添加AI回复消息
+            const aiMessage = {
+              type: "ai",
+              content: res.data || "抱歉，我没有收到有效的回复。",
+              time: this.formatTime(),
+            };
+            this.messages.push(aiMessage);
+            this.loading = false;
+            this.scrollToBottom();
+          }
+        })
+        .catch(() => {
+          this.loading = false;
+          // 添加错误消息
+          const errorMessage = {
+            type: "ai",
+            content: "抱歉，服务暂时不可用，请稍后重试。",
+            time: this.formatTime(),
+          };
+          this.messages.push(errorMessage);
+          this.scrollToBottom();
+          this.$message.error("发送失败，请重试！");
+        });
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.chat-container {
+  height: 94vh;
+  display: flex;
+  flex-direction: column;
+}
+
+// 对话内容区域 - 动态高度，支持滚动
+.chat-content {
+  flex: 1;
+  width: 1120px;
+  margin: 0 auto;
+  overflow-y: auto;
+  padding: 20px;
+  margin-top: 50px;
+  border-radius: 8px 8px 0 0;
+}
+
+// 空状态
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 400px;
+  color: #909399;
+}
+
+.welcome-text {
+  text-align: center;
+
+  h3 {
+    margin: 0 0 10px 0;
+    font-size: 24px;
+    font-weight: 500;
+    color: #303133;
+  }
+
+  p {
+    margin: 0;
+    font-size: 16px;
+    color: #909399;
+  }
+}
+
+// 消息列表
+.message-list {
+  padding-bottom: 20px;
+}
+
+.message-item {
+  margin-bottom: 20px;
+  display: flex;
+
+  &.user {
+    justify-content: flex-end;
+
+    .message-content {
+      background: #edf3fe;
+      border-radius: 18px 18px 4px 18px;
+      max-width: 70%;
+    }
+  }
+
+  &.ai {
+    justify-content: flex-start;
+
+    .message-content {
+      background: white;
+      color: #303133;
+      border-radius: 18px 18px 18px 4px;
+      border: 1px solid #e4e7ed;
+      max-width: 70%;
+    }
+  }
+}
+
+.message-content {
+  padding: 12px 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.message-text {
+  line-height: 1.5;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  margin-bottom: 4px;
+}
+
+.message-time {
+  font-size: 12px;
+  opacity: 0.7;
+  text-align: right;
+}
+
+// 加载状态
+.loading-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.loading-gif {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.loading-text {
+  color: #909399;
+  font-size: 14px;
+}
+
+// 底部输入区域 - 固定高度
+.bottom-input-section {
+  height: 248px;
+  width: 1120px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 0 0 8px 8px;
+  padding: 20px;
+}
+
+.input-wrapper {
+  height: 100%;
+}
+
+.textarea-container {
+  position: relative;
+  height: 100%;
+
+  .el-select {
+    margin-bottom: 12px;
+  }
+}
+
+.input-textarea {
+  width: 100%;
+  height: 100%;
+
+  ::v-deep .el-textarea__inner {
+    border-radius: 10px;
+    border: 1px solid #dcdfe6;
+    resize: none;
+    font-size: 14px;
+    line-height: 1.5;
+    height: 170px !important;
+    padding-right: 50px; // 为按钮预留空间
+
+    &:focus {
+      border-color: #409eff;
+    }
+  }
+}
+
+.send-btn {
+  position: absolute;
+  right: 8px;
+  bottom: 0;
+  width: 36px;
+  height: 36px;
+  background: #0256ff;
+  border: none;
+  border-radius: 25%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #66b1ff;
+    transform: scale(1.05);
+  }
+
+  &.disabled {
+    background: #c0c4cc;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  ::v-deep .svg-icon {
+    color: white;
+    font-size: 16px;
+  }
+}
+
+// 响应式设计
+@media (max-width: 768px) {
+  .chat-content {
+    margin: 10px 10px 0 10px;
+    padding: 15px;
+  }
+
+  .bottom-input-section {
+    margin: 0 10px 10px 10px;
+    padding: 15px;
+    height: 120px;
+  }
+
+  .input-textarea {
+    ::v-deep .el-textarea__inner {
+      height: 80px !important;
+      padding-right: 45px; // 移动端稍微减少右边距
+    }
+  }
+
+  .send-btn {
+    width: 32px;
+    height: 32px;
+    right: 6px;
+    bottom: 6px;
+
+    ::v-deep .svg-icon {
+      font-size: 14px;
+    }
+  }
+
+  .message-item {
+    &.user .message-content,
+    &.ai .message-content {
+      max-width: 85%; // 移动端增加最大宽度
+    }
+  }
+
+  .welcome-text h3 {
+    font-size: 20px; // 移动端减小标题字体
+  }
+}
+</style>
