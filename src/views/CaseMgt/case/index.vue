@@ -15,28 +15,54 @@
       </el-col>
     </el-row>
 
-    <el-table v-loading="loading" :data="tableList">
-      <el-table-column label="测试内容" align="center" prop="content" />
-      <el-table-column label="测试步骤" align="center" prop="procedures" />
-      <el-table-column label="创建时间" align="center" prop="createTime" />
-      <el-table-column
-        label="操作"
-        align="center"
-        class-name="small-padding fixed-width"
-      >
+    <el-table v-loading="loading" :data="tableList" border style="width: 100%">
+      <el-table-column prop="content" label="测试内容" min-width="200">
+        <template slot-scope="scope">
+          <div class="content-text">
+            {{ scope.row.content }}
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="procedures" label="测试步骤" min-width="300">
+        <template slot-scope="scope">
+          <div class="steps-content">
+            <div
+              v-for="(step, index) in scope.row.procedures"
+              :key="index"
+              class="step-item"
+            >
+              {{ index + 1 }}.{{ step }}
+            </div>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="expected" label="预期结果" min-width="300">
+        <template slot-scope="scope">
+          <div class="expected-content">
+            <div
+              v-for="(result, index) in scope.row.expected"
+              :key="index"
+              class="expected-item"
+            >
+              {{ result }}
+            </div>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column label="创建时间" align="center" width="160" prop="createTime" />
+      <el-table-column label="操作" width="120" align="center">
         <template slot-scope="scope">
           <el-button
-            size="mini"
             type="text"
-            icon="el-icon-edit"
+            size="small"
             @click="handleUpdate(scope.row)"
             >修改</el-button
           >
           <el-button
-            size="mini"
             type="text"
-            icon="el-icon-delete"
+            size="small"
             @click="handleDelete(scope.row)"
+            style="color: #f56c6c"
             >删除</el-button
           >
         </template>
@@ -52,14 +78,60 @@
     />
 
     <!-- 添加或修改用例对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="60%" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px" size="small">
-        <el-form-item label="用例步骤" prop="procedures">
-          <el-input v-model="form.procedures" placeholder="请输入用例步骤" />
-        </el-form-item>
-        <el-form-item label="用例内容" prop="content">
-          <el-input v-model="form.content" placeholder="请输入用例内容" />
-        </el-form-item>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="用例内容" prop="content">
+              <el-input
+                v-model="form.content"
+                type="textarea"
+                :rows="3"
+                placeholder="请输入测试内容描述"
+              ></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="测试步骤" prop="procedures">
+                  <el-input
+                    v-for="(step, index) in form.procedures"
+                    :key="index"
+                    v-model="form.procedures[index]"
+                    type="textarea"
+                    :rows="2"
+                    class="step-input"
+                    style="margin-bottom: 10px"
+                    placeholder="请输入测试步骤"
+                  ></el-input>
+                  <el-button type="text" @click="addStep">+ 添加步骤</el-button>
+                  <el-button v-if="form.procedures.length > 1" type="text" @click="removeStep" style="color: #f56c6c; margin-left: 10px">- 删除步骤</el-button>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-col>
+          <el-col :span="12">
+            <el-row>
+              <el-col :span="24">
+                <el-form-item label="预期结果" prop="expected">
+                  <el-input
+                    v-for="(result, index) in form.expected"
+                    :key="index"
+                    v-model="form.expected[index]"
+                    type="textarea"
+                    :rows="2"
+                    class="expected-input"
+                    style="margin-bottom: 10px"
+                    placeholder="请输入预期结果"
+                  ></el-input>
+                  <el-button type="text" @click="addExpected">+ 添加预期结果</el-button>
+                  <el-button v-if="form.expected.length > 1" type="text" @click="removeExpected" style="color: #f56c6c; margin-left: 10px">- 删除结果</el-button>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </el-col>
+        </el-row>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button size="small" type="primary" @click="submitForm">确 定</el-button>
@@ -107,11 +179,20 @@ export default {
         modulesId: undefined,
       },
       // 表单参数
-      form: {},
+      form: {
+        procedures: [''],
+        expected: [''],
+      },
       // 表单校验
       rules: {
-        name: [
-          { required: true, message: "用例名称不能为空", trigger: "blur" },
+        content: [
+          { required: true, message: "用例内容不能为空", trigger: "blur" },
+        ],
+        procedures: [
+          { required: true, message: "用例步骤不能为空", trigger: "blur" },
+        ],
+        expected: [
+          { required: true, message: "预期结果不能为空", trigger: "blur" },
         ],
       },
     };
@@ -140,7 +221,11 @@ export default {
     getList() {
       this.loading = true;
       listCase(this.queryParams).then((response) => {
-        this.tableList = response.rows;
+        this.tableList = response.rows.map(item => ({
+          ...item,
+          procedures: JSON.parse(item.procedures),
+          expected: JSON.parse(item.expected),
+        }));
         this.total = response.total;
         this.loading = false;
       });
@@ -156,7 +241,8 @@ export default {
         id: undefined,
         modulesId: this.routerData.modulesId,
         projectsId: this.routerData.projectsId,
-        procedures: undefined,
+        procedures: [''],
+        expected: [''],
         content: undefined,
       };
       this.resetForm("form");
@@ -184,18 +270,45 @@ export default {
       this.open = true;
       this.title = "修改用例";
     },
+    // 添加步骤
+    addStep() {
+      this.form.procedures.push("");
+    },
+    // 删除步骤
+    removeStep() {
+      if (this.form.procedures.length > 1) {
+        this.form.procedures.pop();
+      }
+    },
+    // 添加预期结果
+    addExpected() {
+      this.form.expected.push("");
+    },
+    // 删除预期结果
+    removeExpected() {
+      if (this.form.expected.length > 1) {
+        this.form.expected.pop();
+      }
+    },
     /** 提交按钮 */
     submitForm: function () {
       this.$refs["form"].validate((valid) => {
         if (valid) {
+          // 过滤空值并转换为字符串格式
+          const submitData = {
+            ...this.form,
+            procedures: JSON.stringify(this.form.procedures.filter(item => item.trim())),
+            expected: JSON.stringify(this.form.expected.filter(item => item.trim()))
+          };
+
           if (this.form.id != undefined) {
-            updateCase(this.form).then((response) => {
+            updateCase(submitData).then((response) => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            addCase(this.form).then((response) => {
+            addCase(submitData).then((response) => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
               this.getList();
@@ -234,6 +347,60 @@ export default {
     font-size: 20px;
     color: #0052d9;
     margin-right: 8px;
+  }
+}
+
+// 表格样式
+::v-deep .el-table {
+  border-radius: 8px;
+  overflow: hidden;
+
+  .el-table__header {
+    background-color: #f8f9fa;
+
+    th {
+      background-color: #f8f9fa;
+      color: #606266;
+      font-weight: 500;
+    }
+  }
+
+  .el-table__row {
+    &:hover {
+      background-color: #f5f7fa;
+    }
+  }
+}
+
+.content-text {
+  line-height: 1.5;
+  color: #303133;
+  font-weight: 500;
+}
+
+.steps-content,
+.expected-content {
+  .step-item,
+  .expected-item {
+    margin-bottom: 8px;
+    line-height: 1.5;
+    color: #606266;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// 编辑对话框样式
+.dialog-footer {
+  text-align: right;
+}
+
+.step-input,
+.expected-input {
+  ::v-deep .el-textarea__inner {
+    border-radius: 6px;
   }
 }
 </style>
