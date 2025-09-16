@@ -169,59 +169,12 @@
       </div>
     </el-dialog>
 
-    <!-- 保存用例对话框 -->
-    <el-dialog title="保存用例" :visible.sync="saveDialogVisible" width="480px">
-      <el-form :model="saveForm" label-width="80px" size="small">
-        <el-row>
-          <el-col :span="24">
-            <el-form-item label="所属项目">
-              <el-select
-                v-model="saveForm.projectsId"
-                placeholder="请选择所属项目"
-                clearable
-                filterable
-                style="width: 100%"
-                @change="handleProjectChange"
-              >
-                <el-option
-                  v-for="item in projectOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item label="所属模块">
-              <el-select
-                v-model="saveForm.modulesId"
-                placeholder="请选择所属模块"
-                clearable
-                filterable
-                style="width: 100%"
-                :disabled="!saveForm.projectsId"
-              >
-                <el-option
-                  v-for="item in moduleOptions"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button size="small" @click="saveDialogVisible = false"
-          >取消</el-button
-        >
-        <el-button size="small" type="primary" @click="handleSave"
-          >保存</el-button
-        >
-      </div>
-    </el-dialog>
+    <!-- 保存用例对话框组件 -->
+    <SaveCaseDialog
+      :visible.sync="saveDialogVisible"
+      :test-cases="testCases"
+      @save="handleSave"
+    />
   </div>
 </template>
 
@@ -232,10 +185,12 @@
  */
 
 import { aiCase, saveCase } from "@/api/createCase";
-import { listProject } from "@/api/projectMgt/index";
-import { listModule } from "@/api/projectMgt/modules";
+import SaveCaseDialog from "./components/SaveCaseDialog.vue";
 export default {
   name: "CreateCase",
+  components: {
+    SaveCaseDialog,
+  },
   data() {
     return {
       inputText: "",
@@ -250,49 +205,11 @@ export default {
       editIndex: -1,
       loading: false,
       saveDialogVisible: false,
-      saveForm: {
-        projectsId: undefined,
-        modulesId: undefined,
-      },
-      // 项目列表
-      projectOptions: [],
-      // 模块列表
-      moduleOptions: [],
     };
   },
-  created() {
-    this.getProjectList();
-  },
-  mounted() {},
+
   methods: {
-    /** 获取项目列表 */
-    getProjectList() {
-      listProject().then((response) => {
-        this.projectOptions = response.rows;
-      });
-    },
-    /** 获取模块列表 */
-    getModuleList(projectsId) {
-      // 如果没有传入项目ID，则使用表单中的项目ID
-      const projectId = projectsId || this.saveForm.projectsId;
-      if (!projectId) {
-        this.moduleOptions = [];
-        return;
-      }
-      let params = {
-        projectsId: projectId,
-      };
-      listModule(params).then((response) => {
-        this.moduleOptions = response.rows;
-      });
-    },
-    /** 处理项目选择变化 */
-    handleProjectChange(projectsId) {
-      // 清空之前选择的模块
-      this.saveForm.modulesId = undefined;
-      // 根据选择的项目获取对应的模块列表
-      this.getModuleList(projectsId);
-    },
+
     // 处理发送按钮点击
     handleSend() {
       if (!this.inputText.trim() || this.loading) return;
@@ -391,41 +308,23 @@ export default {
         this.$message.warning("请先生成测试用例！");
         return;
       }
-      // 清空表单并打开对话框
-      this.saveForm = {
-        projectsId: undefined,
-        modulesId: undefined,
-      };
-      this.moduleOptions = []; // 清空模块选项
       this.saveDialogVisible = true;
     },
 
     // 确认保存用例
-    handleSave() {
-      if (!this.saveForm.projectsId) {
-        this.$message.warning("请选择所属项目！");
-        return;
-      }
-      if (!this.saveForm.modulesId) {
-        this.$message.warning("请选择所属模块！");
-        return;
-      }
-
-      const saveData = {
-        projectsId: this.saveForm.projectsId,
-        modulesId: this.saveForm.modulesId,
-        testCases: this.testCases,
-      };
-      console.log("🚀 ~ :407 ~ handleSave ~ saveData:", saveData);
-      // 循环this.testCases,给每一项添加projectsId、modulesId
-      const params = this.testCases.map((item) => {
-        console.log("🚀 ~ :406 ~ handleSave ~ item:", item)
+    handleSave(saveData) {
+      const { projectsId, modulesId, testCases } = saveData;
+      
+      console.log("🚀 ~ handleSave ~ saveData:", saveData);
+      // 循环testCases,给每一项添加projectsId、modulesId
+      const params = testCases.map((item) => {
+        console.log("🚀 ~ handleSave ~ item:", item)
         return {
           ...item,
           procedures: JSON.stringify(item.steps),
           expected: JSON.stringify(item.expected),
-          projectsId: this.saveForm.projectsId,
-          modulesId: this.saveForm.modulesId,
+          projectsId: projectsId,
+          modulesId: modulesId,
         };
       });
       console.log("🚀 ~ params:", params);
