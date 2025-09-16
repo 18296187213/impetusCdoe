@@ -3,12 +3,12 @@
     <el-form ref="form" :model="form" :rules="rules" label-width="80px" size="small">
       <el-row>
         <el-col :span="24">
-          <el-form-item label="用例内容" prop="content">
+          <el-form-item label="用例标题" prop="content">
             <el-input
               v-model="form.content"
               type="textarea"
               :rows="3"
-              placeholder="请输入测试内容描述"
+              placeholder="请输入测试标题描述"
             ></el-input>
           </el-form-item>
         </el-col>
@@ -94,7 +94,7 @@ export default {
       },
       rules: {
         content: [
-          { required: true, message: "用例内容不能为空", trigger: "blur" },
+          { required: true, message: "用例标题不能为空", trigger: "blur" },
         ],
         procedures: [
           { required: true, message: "用例步骤不能为空", trigger: "blur" },

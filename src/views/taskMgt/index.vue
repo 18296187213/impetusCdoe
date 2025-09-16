@@ -467,7 +467,15 @@ export default {
     },
     /** 查看详情 */
     handleViewDetail(row) {
-      this.handleUpdate(row);
+      console.log("🚀 ~ :470 ~ handleViewDetail ~ row:", row)
+      this.$router.push({
+        path: "/taskMgt/detail/index",
+        query: {
+          id: row.id,
+          modulesId: row.modulesId,
+          name: row.name,
+        },
+      });
     },
   },
 };

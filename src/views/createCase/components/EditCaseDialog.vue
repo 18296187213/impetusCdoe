@@ -4,12 +4,12 @@
     <el-form :model="form" label-width="80px" size="small">
       <el-row>
         <el-col :span="24">
-          <el-form-item label="测试内容">
+          <el-form-item label="测试标题">
             <el-input
               v-model="form.content"
               type="textarea"
               :rows="3"
-              placeholder="请输入测试内容描述"
+              placeholder="请输入测试标题描述"
             ></el-input>
           </el-form-item>
         </el-col>

@@ -3,15 +3,7 @@
     <el-row>
       <el-col :span="24" class="title-col">
         <i class="el-icon-back" @click="handleBack"></i>
-        <el-button type="text" @click="handleBack">{{
-          routerData.name
-        }}</el-button>
-      </el-col>
-
-      <el-col :span="24" style="text-align: right">
-        <el-button type="primary" size="mini" @click="handleAdd"
-          >新建用例</el-button
-        >
+        <el-button type="text" @click="handleBack">{{ routerData.name }}</el-button>
       </el-col>
     </el-row>
 
@@ -49,21 +41,23 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" align="center" width="160" prop="createTime" />
+      <el-table-column
+        label="创建时间"
+        align="center"
+        width="160"
+        prop="createTime"
+      />
       <el-table-column label="操作" width="120" align="center">
         <template slot-scope="scope">
-          <el-button
-            type="text"
-            size="small"
-            @click="handleUpdate(scope.row)"
-            >修改</el-button
+          <el-button type="text" size="small" @click="handlePass(scope.row)"
+            >通过</el-button
           >
           <el-button
             type="text"
             size="small"
-            @click="handleDelete(scope.row)"
+            @click="handleNotPass(scope.row)"
             style="color: #f56c6c"
-            >删除</el-button
+            >未通过</el-button
           >
         </template>
       </el-table-column>
@@ -76,32 +70,14 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
-
-    <!-- 添加或修改用例对话框组件 -->
-    <CaseFormDialog
-      :visible.sync="open"
-      :title="title"
-      :form-data="currentFormData"
-      :router-data="routerData"
-      @submit="handleFormSubmit"
-    />
   </div>
 </template>
 
 <script>
-import {
-  listCase,
-  delCase,
-  addCase,
-  updateCase,
-} from "@/api/projectMgt/case";
-import CaseFormDialog from './components/CaseFormDialog.vue';
+import { listCase, delCase } from "@/api/projectMgt/case";
 
 export default {
   name: "Case",
-  components: {
-    CaseFormDialog
-  },
   data() {
     return {
       routerData: {
@@ -112,16 +88,10 @@ export default {
       },
       // 遮罩层
       loading: true,
-      // 显示搜索条件
-      showSearch: true,
       // 总条数
       total: 0,
       // 参数表格数据
       tableList: [],
-      // 弹出层标题
-      title: "",
-      // 是否显示弹出层
-      open: false,
       // 查询参数
       queryParams: {
         pageNum: 1,
@@ -129,8 +99,6 @@ export default {
         name: undefined,
         modulesId: undefined,
       },
-      // 当前表单数据
-      currentFormData: {},
     };
   },
   created() {
@@ -142,20 +110,15 @@ export default {
   },
   methods: {
     handleBack() {
-      // 返回到模块页面时需要传递projectId和name参数
       this.$router.push({
-        path: "/CaseMgt/caseModule/index",
-        query: {
-          projectsId: this.routerData.projectsId,
-          name: this.routerData.projectName
-        }
+        path: "/taskMgt/index",
       });
     },
     /** 查询table列表 */
     getList() {
       this.loading = true;
       listCase(this.queryParams).then((response) => {
-        this.tableList = response.rows.map(item => ({
+        this.tableList = response.rows.map((item) => ({
           ...item,
           procedures: JSON.parse(item.procedures),
           expected: JSON.parse(item.expected),
@@ -164,52 +127,27 @@ export default {
         this.loading = false;
       });
     },
-
-    /** 搜索按钮操作 */
-    handleQuery() {
-      this.queryParams.pageNum = 1;
-      this.getList();
-    },
-    /** 重置按钮操作 */
-    resetQuery() {
-      this.resetForm("queryForm");
-      this.handleQuery();
-    },
-    /** 新增按钮操作 */
-    handleAdd() {
-      this.currentFormData = {};
-      this.open = true;
-      this.title = "添加用例";
-    },
     /** 修改按钮操作 */
-    handleUpdate(row) {
-      this.currentFormData = { ...row };
-      this.open = true;
-      this.title = "修改用例";
-    },
-    /** 处理表单提交 */
-    handleFormSubmit(submitData) {
-      if (submitData.id != undefined) {
-        updateCase(submitData).then((response) => {
-          this.$modal.msgSuccess("修改成功");
-          this.open = false;
-          this.getList();
-        });
-      } else {
-        addCase(submitData).then((response) => {
-          this.$modal.msgSuccess("新增成功");
-          this.open = false;
-          this.getList();
-        });
-      }
-    },
-    /** 删除按钮操作 */
-    handleDelete(row) {
+    handlePass(row) {
       const id = row.id;
       this.$modal
-        .confirm('是否确认删除用例名称为"' + row.content + '"的数据项？')
+        .confirm('是否确认通过标题为"' + row.content + '"的数据项？')
         .then(function () {
-          return delCase(id);
+          // return delCase(id);
+        })
+        .then(() => {
+          this.getList();
+          this.$modal.msgSuccess("删除成功");
+        })
+        .catch(() => {});
+    },
+    /** 删除按钮操作 */
+    handleNotPass(row) {
+      const id = row.id;
+      this.$modal
+        .confirm('是否确认未通过标题为"' + row.content + '"的数据项？')
+        .then(function () {
+          // return delCase(id);
         })
         .then(() => {
           this.getList();
@@ -277,6 +215,4 @@ export default {
     }
   }
 }
-
-
 </style>

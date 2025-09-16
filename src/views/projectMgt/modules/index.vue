@@ -1,9 +1,9 @@
 <template>
   <div class="app-container">
     <el-row>
-      <el-col :span="24" class="title-col" @click.native="handleBack">
-        <i class="el-icon-back"></i>
-        <el-button type="text">{{
+      <el-col :span="24" class="title-col">
+        <i class="el-icon-back" @click="handleBack"></i>
+        <el-button type="text" @click="handleBack">{{
           routerData.name
         }}</el-button>
       </el-col>

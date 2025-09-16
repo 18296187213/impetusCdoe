@@ -26,7 +26,7 @@
               width="80"
               align="center"
             ></el-table-column>
-            <el-table-column prop="content" label="测试内容" min-width="200">
+            <el-table-column prop="content" label="测试标题" min-width="200">
               <template slot-scope="scope">
                 <div class="content-text">
                   {{ scope.row.content }}
@@ -162,7 +162,7 @@ export default {
             // 转换接口返回的数据结构以匹配前端显示格式
             const convertedData = res.data.map((item) => ({
               id: item.testId,
-              content: item.content, // 保留测试内容描述
+              content: item.content, // 保留测试标题描述
               steps: item.procedures, // procedures -> steps
               expected: item.expected,
             }));

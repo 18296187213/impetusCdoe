@@ -114,6 +114,19 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/taskMgt/detail',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/taskMgt/detail/index'),
+        name: 'TaskDetail',
+        meta: { title: '任务详情', activeMenu: '/taskMgt' } // 指定激活的父菜单
+      }
+    ]
+  },
+  {
     path: '/projectMgt',
     component: Layout,
     children: [
