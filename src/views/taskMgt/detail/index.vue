@@ -3,10 +3,26 @@
     <el-row>
       <el-col :span="24" class="title-col">
         <i class="el-icon-back" @click="handleBack"></i>
-        <el-button type="text" @click="handleBack">{{ routerData.name }}</el-button>
+        <el-button type="text" @click="handleBack">{{
+          routerData.name
+        }}</el-button>
       </el-col>
     </el-row>
-
+    <!-- 数据统计展示 -->
+    <div class="data-overview">
+      <div class="stat-item">
+        <span class="stat-label">已通过</span>
+        <span class="stat-number passed">{{ passedCount }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">未通过</span>
+        <span class="stat-number failed">{{ failedCount }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">未测试</span>
+        <span class="stat-number pending">{{ pendingCount }}</span>
+      </div>
+    </div>
     <el-table v-loading="loading" :data="tableList" border style="width: 100%">
       <el-table-column prop="content" label="测试标题" min-width="200">
         <template slot-scope="scope">
@@ -99,6 +115,10 @@ export default {
         name: undefined,
         modulesId: undefined,
       },
+      // 数据统计
+      passedCount: 0,
+      failedCount: 0,
+      pendingCount: 0,
     };
   },
   created() {
@@ -163,7 +183,6 @@ export default {
 .title-col {
   display: flex;
   align-items: center;
-  padding-bottom: 10px;
   font-size: 18px;
   font-weight: bold;
 
@@ -200,6 +219,53 @@ export default {
   line-height: 1.5;
   color: #303133;
   font-weight: 500;
+}
+
+// 数据统计样式
+.data-overview {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ebeef5;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #9e9e9e;
+}
+
+.stat-number {
+  font-size: 16px;
+  font-weight: 500;
+  width: 30px;
+  height: 26px;
+  border-radius: 4px;
+  opacity: 1;
+  text-align: center;
+  line-height: 26px;
+
+  &.passed {
+    color: #14AC3D;
+    background: #E3FFE6;
+  }
+
+  &.failed {
+    color: #D01A1A;
+    background: #FFE3E3;
+  }
+
+  &.pending {
+    color: #1A5DD0;
+    background: #E3EDFF;
+  }
 }
 
 .steps-content,

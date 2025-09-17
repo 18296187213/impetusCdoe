@@ -5,7 +5,7 @@
       <!-- 空状态 -->
       <div v-if="messages.length === 0" class="empty-state">
         <div class="welcome-text">
-          <h3>Hi-我是AI助手</h3>
+          <h3 class="ai-title">Hi-我是AI助手</h3>
         </div>
       </div>
 
@@ -203,6 +203,16 @@ export default {
     font-size: 24px;
     font-weight: 500;
     color: #303133;
+  }
+
+  .ai-title {
+    font-size: 32px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0 0 10px 0;
   }
 
   p {

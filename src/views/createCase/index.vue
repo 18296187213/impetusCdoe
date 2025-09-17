@@ -17,7 +17,7 @@
       <!-- 空状态 -->
       <div v-if="testCases.length === 0 && !loading" class="empty-state">
         <div class="welcome-text">
-          <h3>Hi-我是AI用例助手</h3>
+          <h3 class="ai-title">Hi-我是AI用例助手</h3>
         </div>
       </div>
 
@@ -295,11 +295,17 @@ export default {
   color: #909399;
 }
 
-.welcome-text h3 {
+.welcome-text {
   margin: 0;
-  font-size: 24px;
-  font-weight: 500;
-  color: #303133;
+}
+.ai-title {
+  font-size: 32px;
+  font-weight: 600;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 10px 0;
 }
 
 // 加载状态
