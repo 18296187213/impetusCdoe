@@ -121,7 +121,7 @@ export const constantRoutes = [
         path: 'index',
         component: () => import('@/views/taskMgt/index'),
         name: 'TaskMgt',
-        meta: { title: '任务管理', icon: 'task1' }
+        meta: { title: '任务列表', icon: 'task1' }
       }
     ]
   },

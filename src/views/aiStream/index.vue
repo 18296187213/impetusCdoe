@@ -29,7 +29,11 @@
         <!-- 加载状态  -->
         <div v-if="loading" class="message-item">
           <div class="loading-content">
-            <img src="@/assets/images/loading.gif" alt="加载中" class="loading-gif" />
+            <img
+              src="@/assets/images/loading.gif"
+              alt="加载中"
+              class="loading-gif"
+            />
             <span class="loading-text">正在回答中,请稍后...</span>
           </div>
         </div>
@@ -81,16 +85,11 @@ export default {
   data() {
     return {
       agreementOptions: [
-        {
-          value: "1",
-          label: "HTTP",
-        },
-        {
-          value: "2",
-          label: "HTTPS",
-        },
+        { value: "JT808协议:", label: "部标协议" },
+        { value: "2929协议:", label: "2929协议" },
+        { value: "V3协议:", label: "V3协议" },
       ],
-      agreement: "",
+      agreement: "JT808协议:",
       inputText: "",
       messages: [], // 对话消息列表
       loading: false,
@@ -123,13 +122,13 @@ export default {
 
       const userMessage = {
         type: "user",
-        content: this.inputText,
+        content: this.agreement + this.inputText,
         time: this.formatTime(),
       };
 
       // 添加用户消息
       this.messages.push(userMessage);
-      const currentInput = this.inputText;
+      const currentInput = this.agreement + this.inputText;
       this.inputText = "";
       this.scrollToBottom();
 
@@ -142,7 +141,7 @@ export default {
             // 添加AI回复消息
             const aiMessage = {
               type: "ai",
-              content: res.data || "抱歉，我没有收到有效的回复。",
+              content: res.data.body || "抱歉，我没有收到有效的回复。",
               time: this.formatTime(),
             };
             this.messages.push(aiMessage);
