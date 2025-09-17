@@ -22,6 +22,13 @@
         <span class="stat-label">未测试</span>
         <span class="stat-number pending">{{ pendingCount }}</span>
       </div>
+      <div class="stat-item">
+        <span class="stat-label">未完成</span>
+        <span class="stat-number incomplete">{{ incompleteCount }}</span>
+      </div>
+      <el-button type="primary" size="mini" @click="handleSubmit"
+        >提交任务</el-button
+      >
     </div>
     <el-table v-loading="loading" :data="tableList" border style="width: 100%">
       <el-table-column prop="content" label="测试标题" min-width="200">
@@ -57,24 +64,22 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column
-        label="创建时间"
-        align="center"
-        width="160"
-        prop="createTime"
-      />
-      <el-table-column label="操作" width="120" align="center">
+      <el-table-column prop="remark" label="实际情况" min-width="200">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="handlePass(scope.row)"
-            >通过</el-button
-          >
+          <div class="content-text">
+            {{ scope.row.remark }}
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column label="状态" width="120" align="center">
+        <template slot-scope="scope">
           <el-button
             type="text"
             size="small"
-            @click="handleNotPass(scope.row)"
-            style="color: #f56c6c"
-            >未通过</el-button
+            @click="handleEditStatus(scope.row)"
           >
+            {{ getStatusLabel(scope.row.status) }}
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -86,17 +91,29 @@
       :limit.sync="queryParams.pageSize"
       @pagination="getList"
     />
+
+    <!-- 状态编辑弹窗 -->
+    <StatusEditDialog
+      ref="statusEditDialog"
+      @success="handleStatusUpdateSuccess"
+    />
   </div>
 </template>
 
 <script>
-import { listCase, delCase } from "@/api/projectMgt/case";
+import { listTestByTaskId, submitTask } from "@/api/taskMgt/index";
+import { listCase } from "@/api/projectMgt/case";
+import StatusEditDialog from "./StatusEditDialog.vue";
 
 export default {
   name: "Case",
+  components: {
+    StatusEditDialog,
+  },
   data() {
     return {
       routerData: {
+        workId: undefined,
         name: undefined,
         modulesId: undefined,
         projectsId: undefined,
@@ -112,13 +129,20 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        name: undefined,
         modulesId: undefined,
       },
       // 数据统计
       passedCount: 0,
       failedCount: 0,
       pendingCount: 0,
+      incompleteCount: 0,
+      // 状态选项
+      statusOptions: [
+        { value: 0, label: "待测试" },
+        { value: 1, label: "通过" },
+        { value: 2, label: "未通过" },
+        { value: 3, label: "未完成" },
+      ],
     };
   },
   created() {
@@ -129,6 +153,20 @@ export default {
     }
   },
   methods: {
+    /** 提交任务 */
+    handleSubmit() {
+      this.$modal
+        .confirm('是否确认提交任务"' + this.routerData.name + '"？')
+        .then(() => {
+          return submitTask({workId: this.routerData.workId});
+        })
+        .then(() => {
+          this.getList();
+          this.$modal.msgSuccess("提交成功");
+          this.handleBack();
+        })
+        .catch(() => {});
+    },
     handleBack() {
       this.$router.push({
         path: "/taskMgt/index",
@@ -147,33 +185,60 @@ export default {
         this.loading = false;
       });
     },
-    /** 修改按钮操作 */
-    handlePass(row) {
-      const id = row.id;
-      this.$modal
-        .confirm('是否确认通过标题为"' + row.content + '"的数据项？')
-        .then(function () {
-          // return delCase(id);
-        })
-        .then(() => {
-          this.getList();
-          this.$modal.msgSuccess("删除成功");
-        })
-        .catch(() => {});
+    /** 获取状态标签 */
+    getStatusLabel(status) {
+      const statusMap = {
+        0: "待测试",
+        1: "通过",
+        2: "未通过",
+        3: "未完成",
+      };
+      return statusMap[status] || "待测试";
     },
-    /** 删除按钮操作 */
-    handleNotPass(row) {
-      const id = row.id;
-      this.$modal
-        .confirm('是否确认未通过标题为"' + row.content + '"的数据项？')
-        .then(function () {
-          // return delCase(id);
-        })
-        .then(() => {
-          this.getList();
-          this.$modal.msgSuccess("删除成功");
-        })
-        .catch(() => {});
+    /** 编辑状态 */
+    handleEditStatus(row) {
+      this.$refs.statusEditDialog.open(row);
+    },
+    /** 状态更新成功回调 */
+    handleStatusUpdateSuccess(formData) {
+      // 更新表格中对应行的数据
+      const index = this.tableList.findIndex((item) => item.id === formData.id);
+      if (index !== -1) {
+        this.tableList[index].status = formData.status;
+        this.tableList[index].actualSituation = formData.actualSituation;
+      }
+      // 重新计算统计数据
+      this.calculateStats();
+    },
+    // 计算统计数据
+    calculateStats() {
+      // 根据状态值计算统计数据
+      // 0: 待测试, 1: 通过, 2: 未通过, 3: 未完成
+      this.passedCount = this.tableList.filter(
+        (item) => item.status === 1
+      ).length;
+      this.failedCount = this.tableList.filter(
+        (item) => item.status === 2
+      ).length;
+      this.pendingCount = this.tableList.filter(
+        (item) => item.status === 0
+      ).length;
+      this.incompleteCount = this.tableList.filter(
+        (item) => item.status === 3
+      ).length;
+
+      // 如果没有status字段，初始化为待测试状态
+      if (this.tableList.length > 0 && this.tableList[0].status === undefined) {
+        this.tableList.forEach((item) => {
+          if (item.status === undefined) {
+            item.status = 0; // 默认为待测试
+          }
+        });
+        this.pendingCount = this.tableList.length;
+        this.passedCount = 0;
+        this.failedCount = 0;
+        this.incompleteCount = 0;
+      }
     },
   },
 };
@@ -253,18 +318,23 @@ export default {
   line-height: 26px;
 
   &.passed {
-    color: #14AC3D;
-    background: #E3FFE6;
+    color: #14ac3d;
+    background: #e3ffe6;
   }
 
   &.failed {
-    color: #D01A1A;
-    background: #FFE3E3;
+    color: #d01a1a;
+    background: #ffe3e3;
   }
 
   &.pending {
-    color: #1A5DD0;
-    background: #E3EDFF;
+    color: #1a5dd0;
+    background: #e3edff;
+  }
+
+  &.incomplete {
+    color: #e6a23c;
+    background: #fdf6ec;
   }
 }
 

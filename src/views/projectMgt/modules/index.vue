@@ -38,6 +38,7 @@
 
     <el-table v-loading="loading" :data="tableList" stripe>
       <el-table-column label="模块名称" align="center" prop="name" />
+      <el-table-column label="用例条数" align="center" prop="testNumber" />
       <el-table-column label="创建时间" align="center" prop="createTime" />
       <el-table-column
         label="操作"

@@ -332,6 +332,8 @@ export default {
       }
       let params = {
         projectsId: projectId,
+        pageNum: 1,
+        pageSize: 9999,
       };
       listModule(params).then((response) => {
         this.moduleOptions = response.rows;
@@ -352,7 +354,11 @@ export default {
     },
     /** 获取项目列表 */
     getProjectList() {
-      listProject().then((response) => {
+      let params = {
+        pageNum: 1,
+        pageSize: 9999,
+      }
+      listProject(params).then((response) => {
         this.projectOptions = response.rows;
       });
     },
@@ -471,7 +477,7 @@ export default {
       this.$router.push({
         path: "/taskMgt/detail/index",
         query: {
-          id: row.id,
+          workId: row.id,
           modulesId: row.modulesId,
           name: row.name,
         },
