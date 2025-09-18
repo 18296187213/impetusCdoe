@@ -10,6 +10,14 @@
           v-show="showSearch"
           label-width="68px"
         >
+          <el-form-item label="任务名称" prop="name">
+            <el-input
+              v-model="queryParams.name"
+              placeholder="请输入任务名称"
+              clearable
+              @change="handleQuery"
+            />
+          </el-form-item>
           <el-form-item label="所属项目" prop="projectsId">
             <el-select
               v-model="queryParams.projectsId"
@@ -26,7 +34,7 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="指派人员" prop="workUserId">
+          <!-- <el-form-item label="指派人员" prop="workUserId">
             <el-select
               v-model="queryParams.workUserId"
               placeholder="请选择指派人员"
@@ -41,7 +49,7 @@
                 :value="item.userId"
               />
             </el-select>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="任务状态" prop="status">
             <el-select
               v-model="queryParams.status"
@@ -59,9 +67,9 @@
       </el-col>
 
       <el-col :span="2" style="text-align: right">
-        <el-button type="primary" size="mini" @click="handleAdd"
+        <!-- <el-button type="primary" size="mini" @click="handleAdd"
           >新建任务</el-button
-        >
+        > -->
       </el-col>
     </el-row>
 
@@ -99,11 +107,7 @@
               <span class="value">{{ item.modulesName }}</span>
             </div>
             <div class="info-row">
-              <span class="label">创建时间</span>
-              <span class="value">{{ item.createTime }}</span>
-            </div>
-            <div class="info-row">
-              <span class="label">截止时间</span>
+              <span class="label">完成时间</span>
               <span class="value">{{ item.deadline }}</span>
             </div>
             <div class="info-row">
@@ -116,27 +120,27 @@
 
           <!-- 卡片操作按钮 -->
           <div class="card-actions">
-            <div class="actions-left">
+            <!-- <div class="actions-left">
               <svg-icon
                 icon-class="delete-task"
                 @click.stop="handleDelete(item)"
               />
-            </div>
+            </div> -->
             <div class="actions-right">
-              <el-button
+              <!-- <el-button
                 size="mini"
                 type="primary"
                 plain
                 @click.stop="handleUpdate(item)"
               >
                 编辑
-              </el-button>
+              </el-button> -->
               <el-button
                 size="mini"
                 type="primary"
                 @click.stop="handleViewDetail(item)"
               >
-                详情
+                执行
               </el-button>
             </div>
           </div>
@@ -263,13 +267,13 @@
 </template>
 
 <script>
-import { listTask, delTask, addTask, updateTask } from "@/api/taskMgt/index";
+import { listUserTask, delTask, addTask, updateTask } from "@/api/taskMgt/index";
 import { listProject } from "@/api/projectMgt/index";
 import { listUser } from "@/api/system/user";
 import { listModule } from "@/api/projectMgt/modules";
 
 export default {
-  name: "taskMgt",
+  name: "myTask",
   data() {
     return {
       // 遮罩层
@@ -297,6 +301,7 @@ export default {
         projectsId: undefined,
         workUserId: undefined,
         status: undefined,
+        name: undefined,
       },
       // 表单参数
       form: {},
@@ -323,7 +328,7 @@ export default {
   created() {
     this.getList();
     this.getProjectList();
-    this.getUserList();
+    // this.getUserList();
   },
   methods: {
     /** 获取模块列表 */
@@ -369,7 +374,7 @@ export default {
     /** 查询任务列表 */
     getList() {
       this.loading = true;
-      listTask(this.queryParams).then((response) => {
+      listUserTask(this.queryParams).then((response) => {
         this.tableList = response.rows;
         this.total = response.total;
         this.loading = false;
@@ -479,7 +484,7 @@ export default {
     handleViewDetail(row) {
       console.log("🚀 ~ :470 ~ handleViewDetail ~ row:", row)
       this.$router.push({
-        path: "/taskMgt/detail/index",
+        path: "/myTask/detail/index",
         query: {
           workId: row.id,
           modulesId: row.modulesId,
@@ -588,7 +593,7 @@ export default {
 
 .card-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   padding-top: 10px;
   border-top: 1px solid #f0f0f0;

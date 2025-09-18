@@ -126,6 +126,18 @@ export const constantRoutes = [
     ]
   },
   {
+    path: '/myTask',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/myTask/index'),
+        name: 'MyTask',
+        meta: { title: '我的任务', icon: 'task1' }
+      }
+    ]
+  },
+  {
     path: '/taskMgt/detail',
     component: Layout,
     hidden: true,
@@ -135,6 +147,19 @@ export const constantRoutes = [
         component: () => import('@/views/taskMgt/detail/index'),
         name: 'TaskDetail',
         meta: { title: '任务详情', activeMenu: '/taskMgt' } // 指定激活的父菜单
+      }
+    ]
+  },
+  {
+    path: '/myTask/detail',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/myTask/detail/index'),
+        name: 'MyTaskDetail',
+        meta: { title: '我的任务详情', activeMenu: '/myTask' } // 指定激活的父菜单
       }
     ]
   },

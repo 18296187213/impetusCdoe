@@ -26,9 +26,9 @@
         <span class="stat-label">未完成</span>
         <span class="stat-number incomplete">{{ incompleteCount }}</span>
       </div>
-      <!-- <el-button type="primary" size="mini" @click="handleSubmit"
+      <el-button type="primary" size="mini" @click="handleSubmit"
         >提交任务</el-button
-      > -->
+      >
     </div>
     <el-table v-loading="loading" :data="tableList" border style="width: 100%">
       <el-table-column prop="content" label="测试标题" min-width="200">
@@ -64,13 +64,13 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="remark" label="实际情况" min-width="200">
+      <!-- <el-table-column prop="remark" label="实际情况" min-width="200">
         <template slot-scope="scope">
           <div class="content-text">
             {{ scope.row.remark }}
           </div>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="结果" width="120" align="center">
         <template slot-scope="scope">
           <el-tag :type="getStatusType(scope.row.status)" size="mini">
@@ -80,11 +80,28 @@
       </el-table-column>
       <!-- <el-table-column label="结果" width="120" align="center">
         <template slot-scope="scope">
-          <el-button type="text" size="small">
+          <el-button
+            type="text"
+            size="small"
+          >
             {{ getStatusLabel(scope.row.status) }}
           </el-button>
         </template>
       </el-table-column> -->
+      <el-table-column label="操作" width="80" align="center">
+        <template slot-scope="scope">
+          <i
+            class="el-icon-video-play mr5"
+            style="font-size: 20px; color: #0052d9;"
+            @click="handleEditStatus(scope.row)"
+          ></i>
+          <i
+            class="el-icon-tickets"
+            style="font-size: 20px; color: #0052d9;"
+            @click="openHistory(scope.row)"
+          ></i>
+        </template>
+      </el-table-column>
     </el-table>
 
     <pagination
@@ -100,17 +117,27 @@
       ref="statusEditDialog"
       @success="handleStatusUpdateSuccess"
     />
+
+    <!-- 操作记录弹窗 -->
+    <HistoryDialog
+      :visible.sync="historyDialogVisible"
+      :case-title="currentCaseTitle"
+      :history-list="historyList"
+      @close="handleCloseHistory"
+    />
   </div>
 </template>
 
 <script>
 import { listTestByTaskId, submitTask } from "@/api/taskMgt/index";
 import StatusEditDialog from "./StatusEditDialog.vue";
+import HistoryDialog from "./HistoryDialog.vue";
 
 export default {
   name: "Case",
   components: {
     StatusEditDialog,
+    HistoryDialog,
   },
   data() {
     return {
@@ -131,7 +158,7 @@ export default {
       queryParams: {
         pageNum: 1,
         pageSize: 10,
-        workId: undefined,
+        modulesId: undefined,
       },
       // 数据统计
       passedCount: 0,
@@ -144,6 +171,44 @@ export default {
         { value: 1, label: "通过" },
         { value: 2, label: "未通过" },
         { value: 3, label: "未完成" },
+      ],
+      // 操作记录弹窗控制
+      historyDialogVisible: false,
+      currentCaseTitle: '',
+      // 模拟操作记录数据
+      historyList: [
+        {
+          id: 1,
+          result: '通过',
+          actualSituation: '功能正常，用户可以成功登录系统',
+          time: '2024-01-15 14:30:25',
+          operator: '张三',
+          resultType: 'success'
+        },
+        {
+          id: 2,
+          result: '未通过',
+          actualSituation: '登录按钮点击后无响应，控制台报错：网络连接超时',
+          time: '2024-01-15 10:15:42',
+          operator: '李四',
+          resultType: 'error'
+        },
+        {
+          id: 3,
+          result: '待测试',
+          actualSituation: '分配给测试人员，等待执行',
+          time: '2024-01-14 16:20:10',
+          operator: '王五',
+          resultType: 'pending'
+        },
+        {
+          id: 4,
+          result: '未完成',
+          actualSituation: '测试环境异常，无法进行测试',
+          time: '2024-01-14 09:45:33',
+          operator: '赵六',
+          resultType: 'warning'
+        }
       ],
     };
   },
@@ -171,7 +236,7 @@ export default {
     },
     handleBack() {
       this.$router.push({
-        path: "/taskMgt/index",
+        path: "/myTask/index",
       });
     },
     /** 查询table列表 */
@@ -207,6 +272,17 @@ export default {
       };
       return statusMap[status] || "待测试";
     },
+    /** 打开历史记录 */
+    openHistory(row) {
+      console.log("🚀 ~ :230 ~ openHistory ~ row:", row);
+      this.currentCaseTitle = row.content;
+      this.historyDialogVisible = true;
+    },
+    /** 关闭操作记录弹窗 */
+    handleCloseHistory() {
+      this.historyDialogVisible = false;
+      this.currentCaseTitle = '';
+    },
     /** 编辑状态 */
     handleEditStatus(row) {
       this.$refs.statusEditDialog.open(row);
@@ -214,13 +290,14 @@ export default {
     /** 状态更新成功回调 */
     handleStatusUpdateSuccess(formData) {
       // 更新表格中对应行的数据
-      const index = this.tableList.findIndex((item) => item.id === formData.id);
-      if (index !== -1) {
-        this.tableList[index].status = formData.status;
-        this.tableList[index].actualSituation = formData.actualSituation;
-      }
+      // const index = this.tableList.findIndex((item) => item.id === formData.id);
+      // if (index !== -1) {
+      //   this.tableList[index].status = formData.status;
+      //   this.tableList[index].remark = formData.remark;
+      // }
       // 重新计算统计数据
-      this.calculateStats();
+      // this.calculateStats();
+      this.getList();
     },
     // 计算统计数据
     calculateStats() {
@@ -363,4 +440,6 @@ export default {
     }
   }
 }
+
+
 </style>
