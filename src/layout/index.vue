@@ -21,6 +21,8 @@
       <app-main />
       <settings ref="settingRef" />
     </div>
+    <!-- 全局登录弹窗 -->
+    <login-dialog :visible.sync="loginDialogVisible" />
   </div>
 </template>
 
@@ -49,6 +51,18 @@ export default {
       needTagsView: (state) => state.settings.tagsView,
       fixedHeader: (state) => state.settings.fixedHeader,
     }),
+    loginDialogVisible: {
+      get() {
+        return this.$store.state.loginDialog.visible;
+      },
+      set(value) {
+        if (value) {
+          this.$store.dispatch('loginDialog/showLoginDialog');
+        } else {
+          this.$store.dispatch('loginDialog/hideLoginDialog');
+        }
+      }
+    },
     classObj() {
       return {
         hideSidebar: !this.sidebar.opened,

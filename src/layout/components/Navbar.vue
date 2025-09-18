@@ -25,7 +25,13 @@
 
       </template>
 
-      <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="hover">
+      <!-- 未登录状态：显示登录按钮 -->
+      <!-- <div v-if="!isLoggedIn" class="login-btn right-menu-item" @click="handleLogin">
+        登录
+      </div> -->
+
+      <!-- 已登录状态：显示用户信息下拉菜单 -->
+      <!-- <el-dropdown v-else class="avatar-container right-menu-item hover-effect" trigger="hover">
         <div class="avatar-wrapper">
           <img :src="avatar" class="user-avatar">
           <span class="user-nickname"> {{ nickName }} </span>
@@ -41,7 +47,7 @@
             <span>退出登录</span>
           </el-dropdown-item>
         </el-dropdown-menu>
-      </el-dropdown>
+      </el-dropdown> -->
     </div>
   </div>
 </template>
@@ -74,8 +80,13 @@ export default {
       'sidebar',
       'avatar',
       'device',
-      'nickName'
+      'nickName',
+      'token'
     ]),
+    // 判断是否已登录（基于token是否存在）
+    isLoggedIn() {
+      return !!this.token
+    },
     setting: {
       get() {
         return this.$store.state.settings.showSettings
@@ -93,6 +104,11 @@ export default {
     },
     setLayout(event) {
       this.$emit('setLayout')
+    },
+    // 处理登录按钮点击事件
+    handleLogin() {
+      // 调用Vuex action显示登录弹窗
+      this.$store.dispatch('loginDialog/showLoginDialog')
     },
     logout() {
       this.$confirm('确定注销并退出系统吗？', '提示', {
@@ -168,6 +184,22 @@ export default {
         &:hover {
           background: rgba(0, 0, 0, .025)
         }
+      }
+    }
+
+    .login-btn {
+      background: #409EFF;
+      color: #fff;
+      border-radius: 4px;
+      padding: 8px 16px;
+      margin-right: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1;
+      transition: background-color 0.3s;
+
+      &:hover {
+        background: #66b1ff;
       }
     }
 

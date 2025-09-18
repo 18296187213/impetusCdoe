@@ -173,13 +173,13 @@ export default {
 }
 
 .login-form {
-  // 透明度
   opacity: 0.9;
   border-radius: 6px;
   background: #ffffff;
   width: 400px;
   padding: 25px 25px 5px 25px;
   z-index: 1;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
   .el-input {
     height: 38px;
     input {

@@ -35,6 +35,8 @@ import ImagePreview from "@/components/ImagePreview"
 import DictTag from '@/components/DictTag'
 // 字典数据组件
 import DictData from '@/components/DictData'
+// 登录弹窗组件
+import LoginDialog from '@/components/LoginDialog'
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
@@ -47,6 +49,11 @@ Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
 Vue.prototype.handleTree = handleTree
 
+// 全局登录弹窗方法
+Vue.prototype.$showLogin = function() {
+  this.$store.dispatch('loginDialog/showLoginDialog')
+}
+
 // 全局组件挂载
 Vue.component('DictTag', DictTag)
 Vue.component('Pagination', Pagination)
@@ -55,6 +62,7 @@ Vue.component('Editor', Editor)
 Vue.component('FileUpload', FileUpload)
 Vue.component('ImageUpload', ImageUpload)
 Vue.component('ImagePreview', ImagePreview)
+Vue.component('LoginDialog', LoginDialog)
 
 Vue.use(directive)
 Vue.use(plugins)

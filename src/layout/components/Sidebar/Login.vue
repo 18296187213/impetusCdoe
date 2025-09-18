@@ -60,10 +60,8 @@ export default {
   methods: {
     // 处理登录按钮点击事件
     handleLogin() {
-      // TODO: 这里将来实现登录弹窗逻辑
-      console.log('点击登录按钮，将来实现登录弹窗')
-      // 临时跳转到登录页面
-      this.$router.push('/login')
+      // 调用Vuex action显示登录弹窗
+      this.$store.dispatch('loginDialog/showLoginDialog')
     },
 
     // 跳转到个人中心
