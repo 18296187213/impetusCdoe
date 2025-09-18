@@ -63,7 +63,11 @@
               >
               </el-option>
             </el-select>
-            <el-input size="small" v-model="device" placeholder="输入设备号，多个号码逗号分隔"></el-input>
+            <el-input
+              size="small"
+              v-model="device"
+              placeholder="输入设备号，多个号码逗号分隔"
+            ></el-input>
           </div>
           <el-input
             v-model="inputText"
@@ -71,7 +75,7 @@
             :rows="5"
             placeholder="请发送接口内容"
             class="input-textarea"
-            @keyup.enter.ctrl="handleSend"
+            @keydown.native="handleKeydown"
           ></el-input>
           <div
             @click="handleSend"
@@ -133,6 +137,34 @@ export default {
           chatContent.scrollTop = chatContent.scrollHeight;
         }
       });
+    },
+
+    // 处理键盘事件
+    handleKeydown(event) {
+      // Enter键发送消息（不包含Ctrl）
+      if (event.key === "Enter" && !event.ctrlKey) {
+        event.preventDefault(); // 阻止默认换行行为
+        this.handleSend();
+      }
+      // Ctrl+Enter键换行
+      else if (event.key === "Enter" && event.ctrlKey) {
+        // 手动插入换行符
+        const textarea = event.target;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const value = textarea.value;
+
+        // 在光标位置插入换行符
+        this.inputText =
+          value.substring(0, start) + "\n" + value.substring(end);
+
+        // 设置光标位置到换行符后面
+        this.$nextTick(() => {
+          textarea.selectionStart = textarea.selectionEnd = start + 1;
+        });
+
+        event.preventDefault(); // 阻止默认行为
+      }
     },
 
     // 处理发送按钮点击
@@ -335,7 +367,6 @@ export default {
   .el-select {
     margin-bottom: 12px;
   }
-
 }
 
 .input-textarea {

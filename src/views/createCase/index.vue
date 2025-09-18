@@ -103,7 +103,7 @@
             :rows="5"
             placeholder="请详细描述功能情况"
             class="input-textarea"
-            @keyup.enter.ctrl="handleSend"
+            @keydown.native="handleKeydown"
           ></el-input>
           <div
             @click="handleSend"
@@ -259,6 +259,33 @@ export default {
         .catch(() => {
           this.$message.error("用例保存失败，请重试！");
         });
+    },
+
+    // 处理键盘事件
+    handleKeydown(event) {
+      // Enter键发送消息（不包含Ctrl）
+      if (event.key === 'Enter' && !event.ctrlKey) {
+        event.preventDefault(); // 阻止默认换行行为
+        this.handleSend();
+      }
+      // Ctrl+Enter键换行
+      else if (event.key === 'Enter' && event.ctrlKey) {
+        // 手动插入换行符
+        const textarea = event.target;
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const value = textarea.value;
+
+        // 在光标位置插入换行符
+        this.inputText = value.substring(0, start) + '\n' + value.substring(end);
+
+        // 设置光标位置到换行符后面
+        this.$nextTick(() => {
+          textarea.selectionStart = textarea.selectionEnd = start + 1;
+        });
+
+        event.preventDefault(); // 阻止默认行为
+      }
     },
   },
 };
