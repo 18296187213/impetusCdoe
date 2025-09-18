@@ -1,7 +1,7 @@
 <template>
   <div class="login">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
-      <h3 class="title">{{title}}</h3>
+      <h3 class="title">AI测试项目工具</h3>
       <el-form-item prop="username">
         <el-input
           v-model="loginForm.username"
@@ -172,6 +172,8 @@ export default {
 }
 
 .login-form {
+  // 透明度
+  opacity: 0.9;
   border-radius: 6px;
   background: #ffffff;
   width: 400px;

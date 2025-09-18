@@ -44,15 +44,27 @@
     <div class="bottom-input-section">
       <div class="input-wrapper">
         <div class="textarea-container">
-          <el-select v-model="agreement" size="small" placeholder="请选择">
-            <el-option
-              v-for="item in agreementOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            >
-            </el-option>
-          </el-select>
+          <div class="select-container">
+            <el-select v-model="agreement" size="small" placeholder="请选择">
+              <el-option
+                v-for="item in agreementOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+            <el-select v-model="env" size="small" placeholder="请选择">
+              <el-option
+                v-for="item in envOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+              </el-option>
+            </el-select>
+            <el-input size="small" v-model="device" placeholder="输入设备号，多个号码逗号分隔"></el-input>
+          </div>
           <el-input
             v-model="inputText"
             type="textarea"
@@ -84,10 +96,17 @@ export default {
   name: "AiStream",
   data() {
     return {
+      device: "",
+      env: "测试环境:",
+      envOptions: [
+        { value: "测试环境:", label: "测试环境" },
+        { value: "生产环境:", label: "生产环境" },
+      ],
       agreementOptions: [
         { value: "JT808协议:", label: "部标协议" },
         { value: "2929协议:", label: "2929协议" },
         { value: "V3协议:", label: "V3协议" },
+        { value: "穿戴类设备:", label: "穿戴类设备" },
       ],
       agreement: "JT808协议:",
       inputText: "",
@@ -280,8 +299,8 @@ export default {
 }
 
 .loading-gif {
-  width: 24px;
-  height: 24px;
+  width: 36px;
+  height: 36px;
   object-fit: contain;
 }
 
@@ -308,9 +327,15 @@ export default {
   position: relative;
   height: 100%;
 
+  .select-container {
+    display: flex;
+    gap: 10px;
+  }
+
   .el-select {
     margin-bottom: 12px;
   }
+
 }
 
 .input-textarea {
