@@ -36,6 +36,7 @@
         />
       </el-menu>
     </el-scrollbar>
+    <login />
   </div>
 </template>
 
@@ -44,9 +45,10 @@ import { mapGetters, mapState } from "vuex";
 import Logo from "./Logo";
 import SidebarItem from "./SidebarItem";
 import variables from "@/assets/styles/variables.scss";
+import Login from "./Login";
 
 export default {
-  components: { SidebarItem, Logo },
+  components: { SidebarItem, Logo, Login },
   computed: {
     ...mapState(["settings"]),
     ...mapGetters(["sidebarRouters", "sidebar"]),
