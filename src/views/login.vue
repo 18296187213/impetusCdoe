@@ -159,11 +159,12 @@ export default {
 <style rel="stylesheet/scss" lang="scss">
 .login {
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
   height: 100%;
   background-image: url("../assets/images/login-background.jpg");
   background-size: cover;
+  padding-right: 15%;
 }
 .title {
   margin: 0px auto 30px auto;

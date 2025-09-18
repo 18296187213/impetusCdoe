@@ -65,28 +65,27 @@ export const constantRoutes = [
     path: '',
     component: Layout,
     redirect: 'index',
-    // hidden: true,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/createCase/index'),
-        name: 'Index',
-        meta: { title: 'AI生成用例', icon: 'case2', affix: true }
-      }
-    ]
-  },
-  {
-    path: '/aiStream',
-    component: Layout,
     children: [
       {
         path: 'index',
         component: () => import('@/views/aiStream/index'),
-        name: 'AiStream',
-        meta: { title: 'AI自动测试', icon: 'case2' }
+        name: 'Index',
+        meta: { title: 'AI自动测试', icon: 'stream', affix: true }
       }
     ]
   },
+  // {
+  //   path: '/aiStream',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/aiStream/index'),
+  //       name: 'AiStream',
+  //       meta: { title: 'AI自动测试', icon: 'case2' }
+  //     }
+  //   ]
+  // },
   {
     path: '/user',
     component: Layout,
@@ -113,30 +112,30 @@ export const constantRoutes = [
   //     }
   //   ]
   // },
-  {
-    path: '/taskMgt',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/taskMgt/index'),
-        name: 'TaskMgt',
-        meta: { title: '任务列表', icon: 'task1' }
-      }
-    ]
-  },
-  {
-    path: '/myTask',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/myTask/index'),
-        name: 'MyTask',
-        meta: { title: '我的任务', icon: 'task1' }
-      }
-    ]
-  },
+  // {
+  //   path: '/taskMgt',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/taskMgt/index'),
+  //       name: 'TaskMgt',
+  //       meta: { title: '任务列表', icon: 'task1' }
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/myTask',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/myTask/index'),
+  //       name: 'MyTask',
+  //       meta: { title: '我的任务', icon: 'task1' }
+  //     }
+  //   ]
+  // },
   {
     path: '/taskMgt/detail',
     component: Layout,
@@ -163,18 +162,18 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/projectMgt',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/projectMgt/index'),
-        name: 'ProjectMgt',
-        meta: { title: '项目管理', icon: 'project1' }
-      },
-    ]
-  },
+  // {
+  //   path: '/projectMgt',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/projectMgt/index'),
+  //       name: 'ProjectMgt',
+  //       meta: { title: '项目管理', icon: 'project1' }
+  //     },
+  //   ]
+  // },
   {
     path: '/projectMgt/modules',
     component: Layout,
@@ -188,18 +187,18 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/CaseMgt',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/CaseMgt/index'),
-        name: 'CaseMgt',
-        meta: { title: '用例库', icon: 'case1' }
-      }
-    ]
-  },
+  // {
+  //   path: '/CaseMgt',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/CaseMgt/index'),
+  //       name: 'CaseMgt',
+  //       meta: { title: '用例库', icon: 'case1' }
+  //     }
+  //   ]
+  // },
   {
     path: '/CaseMgt/caseModule',
     component: Layout,
@@ -213,19 +212,19 @@ export const constantRoutes = [
       }
     ]
   },
-  {
-    path: '/CaseMgt/case',
-    component: Layout,
-    hidden: true,
-    children: [
-      {
-        path: 'index',
-        component: () => import('@/views/CaseMgt/case/index'),
-        name: 'Case',
-        meta: { title: '用例管理' }
-      }
-    ]
-  },
+  // {
+  //   path: '/CaseMgt/case',
+  //   component: Layout,
+  //   hidden: true,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       component: () => import('@/views/CaseMgt/case/index'),
+  //       name: 'Case',
+  //       meta: { title: '用例管理' }
+  //     }
+  //   ]
+  // },
 ]
 
 // 动态路由，基于用户权限动态去加载
