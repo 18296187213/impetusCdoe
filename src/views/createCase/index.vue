@@ -101,15 +101,17 @@
             v-model="inputText"
             type="textarea"
             :rows="5"
-            placeholder="请详细描述功能情况"
+            placeholder="请发送接口内容"
             class="input-textarea"
             @keydown.native="handleKeydown"
           ></el-input>
-          <div
-            @click="handleSend"
-            :class="['send-btn', { disabled: !inputText.trim() || loading }]"
-          >
-            <svg-icon icon-class="case-send" />
+          <div class="btn-container">
+            <div
+              @click="handleSend"
+              :class="['send-btn', { disabled: !inputText.trim() || loading }]"
+            >
+              <svg-icon icon-class="case-send" />
+            </div>
           </div>
         </div>
       </div>
@@ -264,12 +266,12 @@ export default {
     // 处理键盘事件
     handleKeydown(event) {
       // Enter键发送消息（不包含Ctrl）
-      if (event.key === 'Enter' && !event.ctrlKey) {
+      if (event.key === "Enter" && !event.ctrlKey) {
         event.preventDefault(); // 阻止默认换行行为
         this.handleSend();
       }
       // Ctrl+Enter键换行
-      else if (event.key === 'Enter' && event.ctrlKey) {
+      else if (event.key === "Enter" && event.ctrlKey) {
         // 手动插入换行符
         const textarea = event.target;
         const start = textarea.selectionStart;
@@ -277,7 +279,8 @@ export default {
         const value = textarea.value;
 
         // 在光标位置插入换行符
-        this.inputText = value.substring(0, start) + '\n' + value.substring(end);
+        this.inputText =
+          value.substring(0, start) + "\n" + value.substring(end);
 
         // 设置光标位置到换行符后面
         this.$nextTick(() => {
@@ -419,74 +422,105 @@ export default {
   }
 }
 
-// 底部输入区域 - 固定高度
+// 底部输入区域 - 动态高度
 .bottom-input-section {
-  height: 200px;
+  height: 215px;
   width: 1120px;
+  margin: 0 auto;
   background: white;
   border-radius: 0 0 8px 8px;
   padding: 20px;
-  margin: 0 auto;
-}
+  transition: height 0.2s ease-in-out;
 
-.input-wrapper {
-  height: 100%;
-}
+  // 输入包装器
+  .input-wrapper {
+    position: relative;
+    height: 100%;
 
-.textarea-container {
-  position: relative;
-  height: 100%;
-}
+    // 选择器容器
+    .select-container {
+      display: flex;
+      gap: 10px;
 
-.input-textarea {
-  width: 100%;
-  height: 100%;
-
-  ::v-deep .el-textarea__inner {
-    border-radius: 10px;
-    border: 1px solid #dcdfe6;
-    resize: none;
-    font-size: 14px;
-    line-height: 1.5;
-    height: 170px !important;
-    padding-right: 50px; // 为按钮预留空间
-
-    &:focus {
-      border-color: #409eff;
+      .el-select {
+        margin-bottom: 12px;
+      }
     }
-  }
-}
 
-.send-btn {
-  position: absolute;
-  right: 8px;
-  bottom: 0;
-  width: 36px;
-  height: 36px;
-  background: #0256ff;
-  border: none;
-  border-radius: 25%;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
+    // 文本域容器
+    .textarea-container {
+      border: 1px solid #dcdfe6;
+      border-radius: 8px;
+      padding: 10px;
+      background: #fff;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease-in-out;
+      transform-origin: bottom;
 
-  &:hover {
-    background: #66b1ff;
-    transform: scale(1.05);
-  }
+      // 按钮容器
+      .btn-container {
+        display: flex;
+        justify-content: flex-end;
+        padding: 10px;
+        padding-bottom: 0;
 
-  &.disabled {
-    background: #c0c4cc;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
+        // 发送按钮
+        .send-btn {
+          width: 36px;
+          height: 36px;
+          background: #0256ff;
+          border: none;
+          border-radius: 25%;
+          z-index: 10;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s ease;
 
-  ::v-deep .svg-icon {
-    color: white;
-    font-size: 16px;
+          &:hover {
+            background: #66b1ff;
+            transform: scale(1.05);
+          }
+
+          &.disabled {
+            background: #c0c4cc;
+            cursor: not-allowed;
+            pointer-events: none;
+          }
+
+          ::v-deep .svg-icon {
+            color: white;
+            font-size: 16px;
+          }
+        }
+      }
+    }
+
+    // 输入文本域
+    .input-textarea {
+      width: 100%;
+      height: 100%;
+
+      ::v-deep .el-textarea__inner {
+        border-radius: 10px;
+        border: none !important;
+        resize: none;
+        font-size: 14px;
+        line-height: 1.5;
+        background: transparent;
+        box-shadow: none !important;
+        transition: height 0.2s ease-in-out;
+        min-height: 126px;
+        max-height: 222px;
+
+        &:focus {
+          border: none !important;
+          box-shadow: none !important;
+        }
+      }
+    }
   }
 }
 

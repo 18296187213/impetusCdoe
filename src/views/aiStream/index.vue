@@ -368,94 +368,105 @@ export default {
   font-size: 14px;
 }
 
-// 底部输入区域 - 固定高度
+// 底部输入区域 - 动态高度
 .bottom-input-section {
-  height: 248px;
+  height: 260px;
   width: 1120px;
   margin: 0 auto;
   background: white;
   border-radius: 0 0 8px 8px;
   padding: 20px;
-}
+  transition: height 0.2s ease-in-out;
 
-.input-wrapper {
-  position: relative;
-  height: 100%;
+  // 输入包装器
+  .input-wrapper {
+    position: relative;
+    height: 100%;
 
-  .select-container {
-    display: flex;
-    gap: 10px;
-
-    .el-select {
-      margin-bottom: 12px;
-    }
-  }
-
-  .textarea-container {
-    border: 1px solid #dcdfe6;
-    border-radius: 8px;
-    padding: 10px;
-    background: #fff;
-    margin-bottom: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-
-    .btn-container {
+    // 选择器容器
+    .select-container {
       display: flex;
-      justify-content: flex-end;
+      gap: 10px;
+
+      .el-select {
+        margin-bottom: 12px;
+      }
+    }
+
+    // 文本域容器
+    .textarea-container {
+      border: 1px solid #dcdfe6;
+      border-radius: 8px;
       padding: 10px;
-      padding-bottom: 0;
+      background: #fff;
+      margin-bottom: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease-in-out;
+      transform-origin: bottom;
+
+      // 按钮容器
+      .btn-container {
+        display: flex;
+        justify-content: flex-end;
+        padding: 10px;
+        padding-bottom: 0;
+
+        // 发送按钮
+        .send-btn {
+          width: 36px;
+          height: 36px;
+          background: #0256ff;
+          border: none;
+          border-radius: 25%;
+          z-index: 10;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background: #66b1ff;
+            transform: scale(1.05);
+          }
+
+          &.disabled {
+            background: #c0c4cc;
+            cursor: not-allowed;
+            pointer-events: none;
+          }
+
+          ::v-deep .svg-icon {
+            color: white;
+            font-size: 16px;
+          }
+        }
+      }
     }
-  }
-}
 
-.input-textarea {
-  width: 100%;
-  height: 100%;
+    // 输入文本域
+    .input-textarea {
+      width: 100%;
+      height: 100%;
 
-  ::v-deep .el-textarea__inner {
-    border-radius: 10px;
-    border: none !important;
-    resize: none;
-    font-size: 14px;
-    line-height: 1.5;
-    height: 110px !important;
-    background: transparent;
-    box-shadow: none !important;
+      ::v-deep .el-textarea__inner {
+        border-radius: 10px;
+        border: none !important;
+        resize: none;
+        font-size: 14px;
+        line-height: 1.5;
+        background: transparent;
+        box-shadow: none !important;
+        transition: height 0.2s ease-in-out;
+        min-height: 126px;
+        max-height: 222px;
 
-    &:focus {
-      border: none !important;
-      box-shadow: none !important;
+        &:focus {
+          border: none !important;
+          box-shadow: none !important;
+        }
+      }
     }
-  }
-}
-
-.send-btn {
-  width: 36px;
-  height: 36px;
-  background: #0256ff;
-  border: none;
-  border-radius: 25%;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: #66b1ff;
-    transform: scale(1.05);
-  }
-
-  &.disabled {
-    background: #c0c4cc;
-    cursor: not-allowed;
-    pointer-events: none;
-  }
-
-  ::v-deep .svg-icon {
-    color: white;
-    font-size: 16px;
   }
 }
 
