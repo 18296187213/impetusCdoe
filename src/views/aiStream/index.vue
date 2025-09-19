@@ -191,9 +191,33 @@ export default {
         .then((res) => {
           if (res.code === 200) {
             // 添加AI回复消息
+            let content = "抱歉，我没有收到有效的回复。";
+
+            if (res.data.body) {
+              if (typeof res.data.body === "string") {
+                // 尝试解析是否为JSON字符串
+                try {
+                  const parsedJson = JSON.parse(res.data.body);
+                  // 如果解析成功且是对象，则格式化展示
+                  if (typeof parsedJson === "object" && parsedJson !== null) {
+                    content = JSON.stringify(parsedJson, null, 2);
+                  } else {
+                    // 如果解析成功但不是对象，直接展示原字符串
+                    content = res.data.body;
+                  }
+                } catch (e) {
+                  // 如果解析失败，说明是普通字符串，直接展示
+                  content = res.data.body;
+                }
+              } else if (typeof res.data.body === "object") {
+                // 如果直接是对象，格式化展示
+                content = JSON.stringify(res.data.body, null, 2);
+              }
+            }
+
             const aiMessage = {
               type: "ai",
-              content: res.data.body || "抱歉，我没有收到有效的回复。",
+              content: content,
               time: this.formatTime(),
             };
             this.messages.push(aiMessage);
