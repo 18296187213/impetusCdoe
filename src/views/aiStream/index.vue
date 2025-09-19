@@ -43,32 +43,32 @@
     <!-- 底部输入区域 - 固定高度 -->
     <div class="bottom-input-section">
       <div class="input-wrapper">
+        <div class="select-container">
+          <el-select v-model="agreement" size="small" placeholder="请选择">
+            <el-option
+              v-for="item in agreementOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+          <el-select v-model="env" size="small" placeholder="请选择">
+            <el-option
+              v-for="item in envOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            >
+            </el-option>
+          </el-select>
+          <el-input
+            size="small"
+            v-model="device"
+            placeholder="输入设备号，多个号码逗号分隔"
+          ></el-input>
+        </div>
         <div class="textarea-container">
-          <div class="select-container">
-            <el-select v-model="agreement" size="small" placeholder="请选择">
-              <el-option
-                v-for="item in agreementOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-            <el-select v-model="env" size="small" placeholder="请选择">
-              <el-option
-                v-for="item in envOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              >
-              </el-option>
-            </el-select>
-            <el-input
-              size="small"
-              v-model="device"
-              placeholder="输入设备号，多个号码逗号分隔"
-            ></el-input>
-          </div>
           <el-input
             v-model="inputText"
             type="textarea"
@@ -77,11 +77,13 @@
             class="input-textarea"
             @keydown.native="handleKeydown"
           ></el-input>
-          <div
-            @click="handleSend"
-            :class="['send-btn', { disabled: !inputText.trim() || loading }]"
-          >
-            <svg-icon icon-class="case-send" />
+          <div class="btn-container">
+            <div
+              @click="handleSend"
+              :class="['send-btn', { disabled: !inputText.trim() || loading }]"
+            >
+              <svg-icon icon-class="case-send" />
+            </div>
           </div>
         </div>
       </div>
@@ -377,20 +379,32 @@ export default {
 }
 
 .input-wrapper {
-  height: 100%;
-}
-
-.textarea-container {
   position: relative;
   height: 100%;
 
   .select-container {
     display: flex;
     gap: 10px;
+
+    .el-select {
+      margin-bottom: 12px;
+    }
   }
 
-  .el-select {
-    margin-bottom: 12px;
+  .textarea-container {
+    border: 1px solid #dcdfe6;
+    border-radius: 8px;
+    padding: 10px;
+    background: #fff;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+    .btn-container {
+      display: flex;
+      justify-content: flex-end;
+      padding: 10px;
+      padding-bottom: 0;
+    }
   }
 }
 
@@ -400,23 +414,22 @@ export default {
 
   ::v-deep .el-textarea__inner {
     border-radius: 10px;
-    border: 1px solid #dcdfe6;
+    border: none !important;
     resize: none;
     font-size: 14px;
     line-height: 1.5;
-    height: 170px !important;
-    padding-right: 50px; // 为按钮预留空间
+    height: 110px !important;
+    background: transparent;
+    box-shadow: none !important;
 
     &:focus {
-      border-color: #409eff;
+      border: none !important;
+      box-shadow: none !important;
     }
   }
 }
 
 .send-btn {
-  position: absolute;
-  right: 8px;
-  bottom: 0;
   width: 36px;
   height: 36px;
   background: #0256ff;
