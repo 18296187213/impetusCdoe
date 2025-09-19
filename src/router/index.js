@@ -212,19 +212,19 @@ export const constantRoutes = [
       }
     ]
   },
-  // {
-  //   path: '/CaseMgt/case',
-  //   component: Layout,
-  //   hidden: true,
-  //   children: [
-  //     {
-  //       path: 'index',
-  //       component: () => import('@/views/CaseMgt/case/index'),
-  //       name: 'Case',
-  //       meta: { title: '用例管理' }
-  //     }
-  //   ]
-  // },
+  {
+    path: '/CaseMgt/case',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: 'index',
+        component: () => import('@/views/CaseMgt/case/index'),
+        name: 'Case',
+        meta: { title: '用例管理' }
+      }
+    ]
+  },
 ]
 
 // 动态路由，基于用户权限动态去加载

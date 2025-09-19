@@ -111,6 +111,7 @@ export default {
         { value: "2929协议:", label: "2929协议" },
         { value: "V3协议:", label: "V3协议" },
         { value: "穿戴类设备:", label: "穿戴类设备" },
+        { value: "接口测试:", label: "接口测试" },
       ],
       agreement: "JT808协议:",
       inputText: "",
